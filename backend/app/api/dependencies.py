@@ -11,7 +11,7 @@ from database.database import Database
 from repositories.game_repository import PostgresRepository
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
 model_path = BASE_DIR / "modelo" / "game_embeddings.pkl"
 
