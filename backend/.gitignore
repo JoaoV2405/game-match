@@ -1,0 +1,4 @@
+.venv
+csvs
+responses
+__pycache__
