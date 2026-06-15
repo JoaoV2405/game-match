@@ -40,8 +40,22 @@ export async function getPopularGames(): Promise<Game[]> {
 
   return response.json();
 }
-export async function getGameDetail(id:string): Promise<GameDetail[]> {
+export async function getGameDetail(id:string): Promise<GameDetail> {
   const response = await fetch(`${API_URL}/games/id/${id}`, {
+    next: {
+      revalidate: 3600,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Erro ao buscar jogos");
+  }
+
+  return response.json();
+}
+export async function getGameRecommendations(id:number): Promise<GameDetail[]> {
+  console.log(`${API_URL}/games/recommend/${id}`)
+  const response = await fetch(`${API_URL}/games/recommend/${id}`, {
     next: {
       revalidate: 3600,
     },

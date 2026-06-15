@@ -1,4 +1,7 @@
 
+import asyncio
+import sys
+
 from fastapi import FastAPI
 
 from .dependencies import  lifespan
@@ -21,3 +24,4 @@ app.add_middleware(
 )
 
 app.include_router(router)
+

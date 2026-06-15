@@ -1,11 +1,11 @@
-import { Game } from "@/app/types/game";
+import { Game, GameDetail } from "@/app/types/game";
 import { GameCard } from "./GameCard";
 import Link from "next/link";
 import { MetaBlock } from "@/app/game/components/MetaBlock";
 import { TagPill } from "@/app/game/components/TagPill";
 
 interface Props {
-  games: Game[];
+  games: GameDetail[] | Game[];
 }
 
 export function GameGrid({ games }: Props) {
@@ -22,7 +22,7 @@ export function GameGrid({ games }: Props) {
       {games.map((game) => (
         <Link
           key={game.id}
-          href={`/game/${game.id}`}
+          href={`/game/${game.id}/recommendations`}
         >
         <GameCard
           key={game.id}

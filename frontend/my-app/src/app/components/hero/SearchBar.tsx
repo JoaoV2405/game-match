@@ -106,7 +106,7 @@ export function SearchBar() {
           {results.map((game) => (
         <Link
           key={game.id}
-          href={`/game/${game.id}`}
+          href={`/game/${game.id}/recommendations`}
           className="
             flex
             items-center

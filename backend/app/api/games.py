@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from .dependencies import get_repository
+from .dependencies import get_model, get_model_service, get_repository
 from repositories.game_repository import PostgresRepository
 
 
@@ -11,7 +11,6 @@ async def get_game_by_id(
     game_id: int,
     repo: PostgresRepository = Depends(get_repository),
 ):
-    print(game_id)
     game = await repo.get_game_by_id(game_id)
     if game is None:
         raise HTTPException(
@@ -53,3 +52,13 @@ async def get_popular_games(
     repo: PostgresRepository = Depends(get_repository),
 ):
     return await repo.get_most_popular_games(limit)
+
+
+@router.get("/recommend/{game_id}")
+async def recommend(
+    game_id: int,
+    service = Depends(get_model_service),
+):
+    games = await service.recommend(game_id)
+
+    return games

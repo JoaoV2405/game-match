@@ -1,10 +1,7 @@
-import logging
 from repositories.queries import GAME_SELECT
 from database.database import Database
 from schemas.game_schema import Game, GameWebsite
 from psycopg.rows import dict_row
-
-
 
 
 class PostgresRepository:
@@ -76,7 +73,6 @@ class PostgresRepository:
     self,
     game_id: int,
 ) -> Game | None:
-        logging.info("oi")
         query = (
             GAME_SELECT
             + """
@@ -85,12 +81,10 @@ class PostgresRepository:
             """
         )
         async with self.db.pool.connection() as conn:
-            print("oi")
             async with conn.cursor(row_factory=dict_row) as cur:
                 await cur.execute(query, (game_id,))
                 row = await cur.fetchone()
-                print("oi") 
-                print(row)
+             
 
         return None if row is None else self._row_to_game(row)
     async def get_game_by_slug(
@@ -150,7 +144,7 @@ class PostgresRepository:
         query = """
             SELECT *
             FROM games
-            WHERE total_rating_count > 1000
+            WHERE total_rating_count > 200
             ORDER BY total_rating DESC NULLS LAST
             LIMIT %s
         """

@@ -17,15 +17,15 @@ export interface GameDetail {
   id: number;
   name: string;
   slug: string;
-  summary: string | null;
+  summary: string;
 
-  rating: number | null;
-  rating_count: number | null;
+  rating: number;
+  rating_count: number;
 
-  total_rating: number | null;
-  total_rating_count: number | null;
+  total_rating: number ;
+  total_rating_count: number;
 
-  cover_url: string | null;
+  cover_url: string;
   video_id: string | null;
 
   websites: GameWebsiteDto[];

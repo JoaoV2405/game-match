@@ -1,13 +1,13 @@
 import { MetaBlock } from "@/app/game/components/MetaBlock";
 import { TagPill } from "@/app/game/components/TagPill";
-import { Game } from "@/app/types/game";
+import { Game, GameDetail } from "@/app/types/game";
 import { FaStar } from "react-icons/fa";
 import Image from "next/image"
 import { ReactNode } from "react";
 
 
 interface Props {
-  game: Game;
+  game: GameDetail | Game;
   children?: ReactNode;
   
 }

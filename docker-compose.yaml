@@ -1,7 +1,14 @@
 version: '3.8'
 
-services:
+# services:
 
+  
+      
+
+# volumes:
+#   postgres_data:
+
+services:
   database:
     image: postgres:15-alpine
 
@@ -19,6 +26,20 @@ services:
 
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  # backend:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: DockerFile
+
+  #   ports:
+  #     - "8000:8000"
+
+  #   depends_on:
+  #     - database
+
+  #   environment:
+  #     DATABASE_URL: ${DATABASE_URL}
 
 volumes:
   postgres_data:

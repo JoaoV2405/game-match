@@ -4,7 +4,7 @@
 // Perfectly safe to use inside a Server Component parent.
 
 interface YoutubePlayerProps {
-  videoId: string;
+  videoId?: string;
   className?: string;
 }
 

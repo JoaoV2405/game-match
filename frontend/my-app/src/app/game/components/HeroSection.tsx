@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import YoutubePlayer from "./YoutubePlayer";
 import Image from "next/image"
 import { GameDetail } from "@/app/types/game";
+import { PlatformBox } from "./PlatformBox";
 
 
 type HeroSectionProps = {
@@ -22,7 +23,7 @@ export function HeroSection({ game, children }: HeroSectionProps ) {
       </h1>
 
       {/* Linha 2 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-4 lg:grid-cols-4 gap-6">
 
         {/* Cover */}
         <div>
@@ -32,7 +33,7 @@ export function HeroSection({ game, children }: HeroSectionProps ) {
 
           <div
             className="relative h-90 rounded-xl overflow-hidden shadow-2xl border border-violet-700/30"
-            style={{ aspectRatio: "4/5" }}
+            style={{ aspectRatio: "3/4" }}
           >
             <Image
               src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover_url}`}
@@ -41,15 +42,20 @@ export function HeroSection({ game, children }: HeroSectionProps ) {
               className="object-cover object-top "
             />
           </div>
+        
         </div>
 
         {/* Trailer */}
-        <div>
+        <div className="col-span-2">
           <span className="block text-xs font-semibold uppercase tracking-widest text-violet-300 mb-2">
             Trailer
           </span>
 
-          <YoutubePlayer videoId={game.video_id} />
+          <YoutubePlayer videoId={game.video_id ?? ""} />
+        
+        </div>
+        <div className="mt-7">
+            <PlatformBox platforms={game.websites} />
         </div>
 
       </div>

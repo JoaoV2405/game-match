@@ -5,7 +5,7 @@ import { GameDetail } from "@/app/types/game";
 export function RecommendationCard({ game }: { game: GameDetail }) {
   return (
     <Link
-      href={`/game/${game.id}`}
+      href={`/game/${game.id}/recommendations`}
       className="group flex flex-col rounded-xl overflow-hidden border border-violet-200 bg-white shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200"
     >
       <div className="relative w-full h-32">

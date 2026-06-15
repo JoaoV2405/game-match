@@ -11,7 +11,7 @@ return(
                     inline-flex items-center gap-2
                     rounded-xl
                     border border-violet-300/30
-                    bg-violet-700/60
+                    bg-purple-500
                     px-4 py-2
                     text-base font-medium
                     text-white

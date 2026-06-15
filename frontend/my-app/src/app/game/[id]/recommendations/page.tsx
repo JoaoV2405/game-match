@@ -1,6 +1,10 @@
-import {HeroSection} from "../components/HeroSection";
-import { InfoSection } from "../components/InfoSection";
-import { getGameDetail } from "../../services/games.service";
+
+import { HeroSection } from "../../components/HeroSection";
+import { InfoSection } from "../../components/InfoSection";
+import { RecommendationsSection } from "../../components/RecommendationSection";
+import { getGameDetail, getGameRecommendations } from "../../../services/games.service";
+import { GameDetail } from "../../../types/game";
+import { HomeButton } from "@/app/components/HomeButton";
 
 
 // async function getGame(id: string): Promise<GameDetail> {
@@ -60,25 +64,28 @@ import { getGameDetail } from "../../services/games.service";
 
 
 
-
-export default async function GameDetailPage({
+export default async function GameRecommendationPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const {id} = await params;
+  const id = (await params).id
   const game = await getGameDetail(id)
+  console.log(game)
+  const recommendations = await getGameRecommendations(game.id)
   
   return (
     <div className="min-h-screen font-sans antialiased" style={{ fontFamily: "'Space Grotesk', 'Inter', sans-serif" }}>
-      <HeroSection game={game} />
-      <InfoSection game={game} />
-      {/* {game.recommendations.length !== 0 ? (
+      <HeroSection game={game}>
+        <HomeButton></HomeButton>
+      </HeroSection>
+      {recommendations.length !== 0 ? (
   <RecommendationsSection
-    games={game.recommendations}
-    currentTitle={game.title}
+    games={recommendations}
+    currentTitle={game.name}
   />
-) : null} */}
+) : null}
+      <InfoSection game={game} />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import {HeroSection} from "../components/HeroSection";
 import { InfoSection } from "../components/InfoSection";
 import { getGameDetail } from "../../services/games.service";
 import { HomeButton } from "@/app/components/HomeButton";
+import Link from "next/link";
 
 
 // async function getGame(id: string): Promise<GameDetail> {
@@ -75,7 +76,27 @@ export default async function GameDetailPage({
       <HomeButton></HomeButton>
       <HeroSection game={game} />
 
-      <InfoSection game={game} />
+      <InfoSection game={game}>
+        <Link href={`/game/${game.id}/recommendations`}>
+                    <button
+                      className="
+                      w-fit
+                      px-8
+                      py-4
+                      rounded-xl
+                      bg-violet-600
+                      text-white
+                      font-semibold
+                      hover:bg-violet-700
+                      transition
+                      lg:span-2
+                      
+                      "
+                      >
+                      Encontrar jogos semelhantes
+                    </button>
+                    </Link>
+        </InfoSection>
       {/* {game.recommendations.length !== 0 ? (
   <RecommendationsSection
     games={game.recommendations}
