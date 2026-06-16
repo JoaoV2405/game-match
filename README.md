@@ -2,10 +2,16 @@
 
 
 
-[![Demonstração](./docs/game_detail.png)](./docs/homepage_video.mp4)
+Game Matcher é uma aplicação web para descoberta de jogos baseada em similaridade. A partir de um jogo selecionado pelo usuário, o sistema utiliza embeddings pré-computados e métricas de similaridade para recomendar títulos com características semelhantes.
+
+O projeto é composto por:
+
+* **Frontend** desenvolvido em Next.js e React.
+* **Backend** desenvolvido em FastAPI.
+* **Banco de dados PostgreSQL** para armazenamento dos metadados dos jogos.
+* **Modelo de recomendação** baseado em embeddings vetoriais e similaridade cosseno.
 
 ---
-
 ## Capturas de Tela
 
 ### Página Inicial
@@ -28,17 +34,6 @@
 ### Página de Resultados
 
 ![Recomendações](./docs/search_results.png)
-
----
-
-Game Matcher é uma aplicação web para descoberta de jogos baseada em similaridade. A partir de um jogo selecionado pelo usuário, o sistema utiliza embeddings pré-computados e métricas de similaridade para recomendar títulos com características semelhantes.
-
-O projeto é composto por:
-
-* **Frontend** desenvolvido em Next.js e React.
-* **Backend** desenvolvido em FastAPI.
-* **Banco de dados PostgreSQL** para armazenamento dos metadados dos jogos.
-* **Modelo de recomendação** baseado em embeddings vetoriais e similaridade cosseno.
 
 ---
 
