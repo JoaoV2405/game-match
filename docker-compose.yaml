@@ -1,19 +1,9 @@
-version: '3.8'
-
-# services:
-
-  
-      
-
-# volumes:
-#   postgres_data:
+version: "3.8"
 
 services:
-  database:
+  db:
     image: postgres:15-alpine
-
     container_name: postgres_db
-
     restart: always
 
     environment:
@@ -27,19 +17,44 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  # backend:
-  #   build:
-  #     context: ./backend
-  #     dockerfile: DockerFile
+  backend:
+    build:
+      context: ./backend
+      dockerfile: DockerFile
+    develop:
+      watch:
+        - action: sync
+          path: ./backend/app
+          target: /app/app
+    restart: unless-stopped
 
-  #   ports:
-  #     - "8000:8000"
+    depends_on:
+      - db
 
-  #   depends_on:
-  #     - database
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/games
 
-  #   environment:
-  #     DATABASE_URL: ${DATABASE_URL}
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend/my-app
+      dockerfile: DockerFile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    develop:
+        watch:
+          - action: sync
+            path: ./frontend/my-app/src/app
+            target: /app/src/app
+    restart: unless-stopped
+
+    depends_on:
+      - backend
+
+    ports:
+      - "3000:3000"
 
 volumes:
   postgres_data:

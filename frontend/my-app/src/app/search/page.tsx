@@ -1,4 +1,4 @@
-import { searchGames } from "@/app/services/games.service";
+import { searchGames, searchGamesClient } from "@/app/services/games.service";
 import { GameGrid } from "../components/games/GameGrid";
 import { ArrowLeft, Star, Calendar, Building, Search} from 'lucide-react';
 import Link from "next/link";
@@ -10,20 +10,17 @@ export default async function SearchPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q } = await searchParams;
-
-  const game_recommendations = await searchGames(
+  const game_recommendations = await searchGamesClient(
     q ?? "",
-    20
+    10
   );
     
   return(
         <div className="results-view animate-in bg-violet-100">
+            <div className="bg-[linear-gradient(135deg,#1e1b4b_0%,#2d1b69_50%,#1e1b4b_100%)] pt-2">
             <HomeButton></HomeButton>
+            </div>
                     
-                    
-
-
-            {/* Recommendations Section */}
             <section className="py-8 px-4 bg-bg-body min-h-[50vh]">
                 <div className="container mx-auto max-w-7xl">
                     {game_recommendations.length === 0 ? (

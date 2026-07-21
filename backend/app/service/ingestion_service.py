@@ -3,7 +3,7 @@ from typing import List
 from ast import literal_eval
 import csv
 
-from schemas.game_schema import Game, GameWebsite
+from app.schemas.game_schema import Game, GameWebsite
 
 
 def load_games_from_csv(csv_path: Path) -> List[Game]:

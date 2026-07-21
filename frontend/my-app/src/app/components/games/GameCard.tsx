@@ -23,15 +23,16 @@ export function GameCard({ game, children }: Props) {
         transition
         hover:-translate-y-1
         hover:shadow-xl
+        h-full
       "
     >
-      <div className="relative h-140 w-full">
+      <div className="relative h-90 w-full">
       <Image
         src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover_url}`}
         alt={`${game.name} cover`}
         fill
         className="object-cover object-top"
-        sizes="(max-width: 1024px) 100vw, 33vw"
+        sizes="(max-width: 1024px) 80vw, 33vw"
         style={{
       objectFit: "cover",
       transitionProperty: "opacity",
@@ -53,19 +54,7 @@ export function GameCard({ game, children }: Props) {
         </div>
         {children}
         
-        {/* <span
-          className="
-            inline-block
-            rounded-full
-            bg-violet-100
-            px-3
-            py-1
-            text-sm
-            text-violet-700
-          "
-        >
-          {game.genres}
-        </span> */}
+      
       </div>
     </article>
   );

@@ -3,7 +3,7 @@ import pickle
 from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
 
-from repositories.game_repository import PostgresRepository
+from app.repositories.game_repository import PostgresRepository
 
 class ModelService:
     def __init__(self, model, df, repository:PostgresRepository) -> None:

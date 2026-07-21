@@ -6,7 +6,6 @@ import { Search } from "lucide-react";
 import { useDebounce } from 'use-debounce';
 import Image from "next/image"
 import Link from "next/link";
-import router from "next/router";
 
 
 
@@ -26,7 +25,7 @@ export function SearchBar() {
   function handleSearch() { 
     if (!query.trim()) return; 
     
-    router.push(`/search?q=${encodeURIComponent(query)}&limit=10`); 
+    router.push(`http://localhost:3000/search?q=${encodeURIComponent(query)}&limit=10`); 
   
   }
 
@@ -42,7 +41,7 @@ export function SearchBar() {
         setLoading(true);
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/games/search?q=${encodeURIComponent(
+          `http://localhost:8000/games/search?q=${encodeURIComponent(
             debouncedQuery
           )}&limit=5`,{signal: controller.signal}
         );

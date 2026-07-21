@@ -12,7 +12,7 @@ const variantStyles: Record<string, string> = {
 export function TagPill({ label, variant = "genre" }: TagPillProps) {
   return (
     <span
-      className={`inline-block text-xs font-medium px-3 py-1 rounded-full ${variantStyles[variant]}`}
+      className={`inline-block text-xs font-medium px-3 py-1 mx-0.5 rounded-full ${variantStyles[variant]}`}
     >
       {label}
     </span>

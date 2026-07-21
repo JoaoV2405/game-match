@@ -12,7 +12,7 @@ type HeroSectionProps = {
 
 export function HeroSection({ game, children }: HeroSectionProps ) {
   return (
-      <section className="w-full bg-gradient-to-r from-purple-500 to-purple-900 pt-10 pb-16 px-4">
+      <section className="w-full bg-[linear-gradient(135deg,#1e1b4b_0%,#2d1b69_50%,#1e1b4b_100%)] pt-4 pb-16 px-4">
     {children}
 
     <div className="max-w-7xl mx-auto">

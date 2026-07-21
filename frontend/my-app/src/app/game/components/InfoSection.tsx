@@ -7,10 +7,9 @@ import { ReactElement } from "react";
 
 export function InfoSection({ game, children}: { game: GameDetail, children?:ReactElement}) {
   return (
-    <section className="w-full bg-violet-100 px-4">
+    <section className="w-full bg-violet-100 px-4 mb-4">
       <div className="container mx-auto max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-          {/* Conteúdo principal */}
             
           <div className="lg:col-span-4 flex flex-col gap-8">
             

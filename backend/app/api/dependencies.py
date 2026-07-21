@@ -6,21 +6,18 @@ import pickle
 from fastapi import FastAPI
 import pandas as pd
 
-from service.model_service import ModelService
-from database.database import Database
-from repositories.game_repository import PostgresRepository
+from app.service.model_service import ModelService
+from app.database.database import Database
+from app.repositories.game_repository import PostgresRepository
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 model_path = BASE_DIR / "modelo" / "game_embeddings.pkl"
 
 df_path = BASE_DIR / "modelo" / "games_clean_url.csv"
 
-POSTGRES_URL = (
-    "postgresql://postgres:postgres@localhost:5432/games"
-)
-
+POSTGRES_URL = os.getenv("DATABASE_URL")
 db = Database(POSTGRES_URL)
 
 repository = PostgresRepository(db)

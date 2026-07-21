@@ -8,7 +8,7 @@ export function RecommendationCard({ game }: { game: GameDetail }) {
       href={`/game/${game.id}/recommendations`}
       className="group flex flex-col rounded-xl overflow-hidden border border-violet-200 bg-white shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200"
     >
-      <div className="relative w-full h-32">
+      <div className="relative w-full h-30 ">
         <Image
           src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover_url}`}
           alt={game.name}

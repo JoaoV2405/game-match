@@ -71,13 +71,12 @@ export default async function GameRecommendationPage({
 }) {
   const id = (await params).id
   const game = await getGameDetail(id)
-  console.log(game)
   const recommendations = await getGameRecommendations(game.id)
   
   return (
-    <div className="min-h-screen font-sans antialiased" style={{ fontFamily: "'Space Grotesk', 'Inter', sans-serif" }}>
+    <div className="min-h-screen font-sans antialiased bg-[#EDE9FE]" style={{ fontFamily: "'Space Grotesk', 'Inter', sans-serif" }}>
       <HeroSection game={game}>
-        <HomeButton></HomeButton>
+      <HomeButton></HomeButton>
       </HeroSection>
       {recommendations.length !== 0 ? (
   <RecommendationsSection

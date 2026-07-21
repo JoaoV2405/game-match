@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from .dependencies import get_model, get_model_service, get_repository
-from repositories.game_repository import PostgresRepository
+from app.repositories.game_repository import PostgresRepository
 
 
 router = APIRouter(prefix="/games", tags=["games"])

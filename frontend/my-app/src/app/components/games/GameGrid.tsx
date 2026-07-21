@@ -17,23 +17,28 @@ export function GameGrid({ games }: Props) {
         gap-8
         md:grid-cols-2
         lg:grid-cols-3
+        h-full
+        
       "
     >
       {games.map((game) => (
-        <Link
-          key={game.id}
-          href={`/game/${game.id}/recommendations`}
-        >
-        <GameCard
-          key={game.id}
-          game={game}
-        >
-        {game.genres.map((game) => (
-          <TagPill key={game} label={game} variant={"genre"} />
-        ))}
-        </GameCard>
+        <div key={game.id} className="">
 
-        </Link>
+          <Link
+            key={game.id}
+            href={`/game/${game.id}/recommendations`}
+            >
+          <GameCard
+            key={game.id}
+            game={game}
+            >
+          {game.genres.map((game) => (
+            <TagPill key={game} label={game} variant={"genre"} />
+          ))}
+          </GameCard>
+
+          </Link>
+        </div>
         
       ))}
     </div>
