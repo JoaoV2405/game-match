@@ -1,57 +1,40 @@
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
-from psycopg_pool import AsyncConnectionPool
+from app.database.base import Base
+
+from app.models.models import GameModel, GameWebsiteModel  # noqa: F401
+
 
 class Database:
     def __init__(self, postgres_url: str):
-        self.url = postgres_url
-        self.pool = AsyncConnectionPool(
-            conninfo=postgres_url,
-            open=False,
+        self.engine: AsyncEngine = create_async_engine(
+            postgres_url,
+            pool_pre_ping=True,
+            pool_size=10,
+            max_overflow=20,
+            echo=False,
         )
-    async def _init_pool(self):
-        """Lazily initializes the connection pool if it doesn't exist."""
-        if self.pool.closed:
-            await self.pool.open()
 
-    async def connect(self):
-        await self.pool.open()
+        self.session_factory = async_sessionmaker(
+            bind=self.engine,
+            class_=AsyncSession,
+            expire_on_commit=False,
+            autoflush=False,
+        )
 
-    async def close(self):
-        await self.pool.close()
-        
-    async def setup_database(self):
-        await self._init_pool()
-        async with self.pool.connection() as conn:
-            async with conn.cursor() as cur:
-                await cur.execute("""
-                    CREATE TABLE IF NOT EXISTS games (
-                        id BIGINT PRIMARY KEY,
-                        name TEXT NOT NULL,
-                        slug TEXT NOT NULL,
-                        summary TEXT,
-                        rating DOUBLE PRECISION,
-                        rating_count INTEGER,
-                        total_rating DOUBLE PRECISION,
-                        total_rating_count INTEGER,
-                        cover_url TEXT,
-                        genres TEXT[],
-                        companies TEXT[],
-                        platforms TEXT[],
-                        video_id VARCHAR(20)
-                    )
-                """)
+    async def setup_database(self) -> None:
+        async with self.engine.begin() as connection:
+            await connection.execute(
+                text("CREATE EXTENSION IF NOT EXISTS pg_trgm")
+            )
 
-                await cur.execute("""
-                    CREATE TABLE IF NOT EXISTS game_websites (
-                        id BIGSERIAL PRIMARY KEY,
-                        game_id BIGINT NOT NULL,
-                        website_type INTEGER NOT NULL,
-                        url TEXT NOT NULL,
-                        FOREIGN KEY (game_id)
-                            REFERENCES games(id)
-                            ON DELETE CASCADE
-                    )
-                """)
+            await connection.run_sync(Base.metadata.create_all)
 
-        await conn.commit()
-
+    async def close(self) -> None:
+        await self.engine.dispose()

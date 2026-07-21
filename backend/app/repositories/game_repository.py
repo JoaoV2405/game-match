@@ -1,201 +1,180 @@
-from repositories.queries import GAME_SELECT
-from database.database import Database
-from schemas.game_schema import Game, GameWebsite
-from psycopg.rows import dict_row
+from collections.abc import Sequence
+
+from sqlalchemy import func, select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
+from app.models.models import GameModel, GameWebsiteModel
+from app.repositories.game_filters import GameCategory
+from app.schemas.game_schema import Game as GameSchema
 
 
-class PostgresRepository:
+class GameRepository:
+    def __init__(self, session: AsyncSession):
+        self.session = session
 
-    def __init__(self, db: Database):
-        self.db = db
-    async def setup(self):
-        await self.db.setup_database()
     async def insert_games(
         self,
-        games: list[Game],
-    ):
-        await self.db._init_pool()
-        query = """
-            INSERT INTO games (
-                id,
-                name,
-                slug,
-                summary,
-                rating,
-                rating_count,
-                total_rating,
-                total_rating_count,
-                cover_url,
-                genres,
-                companies,
-                platforms
-            )
-            VALUES (
-                %s, %s, %s, %s,
-                %s, %s, %s, %s,
-                %s, %s, %s, %s
-            )
-            ON CONFLICT (id)
-            DO NOTHING;
-        """
+        games: Sequence[GameSchema],
+    ) -> None:
+        if not games:
+            return
 
-        values = [
-            (
-                game.id,
-                game.name,
-                game.slug,
-                game.summary,
-                game.rating,
-                game.rating_count,
-                game.total_rating,
-                game.total_rating_count,
-                game.cover_url,
-                game.genres,
-                game.companies,
-                game.platforms,
-            )
+        game_values = [
+            {
+                "id": game.id,
+                "name": game.name,
+                "slug": game.slug,
+                "summary": game.summary,
+                "rating": game.rating,
+                "rating_count": game.rating_count,
+                "total_rating": game.total_rating,
+                "total_rating_count": game.total_rating_count,
+                "cover_url": game.cover_url,
+                "genres": game.genres or [],
+                "companies": game.companies or [],
+                "platforms": game.platforms or [],
+                "video_id": game.video_id,
+            }
             for game in games
         ]
 
-        async with self.db.pool.connection() as conn:
-
-            async with conn.cursor() as cur:
-
-                await cur.executemany(
-                    query,
-                    values,
-                )
-
-            await conn.commit()
-        await self.db.close()
-    
-    async def get_game_by_id(
-    self,
-    game_id: int,
-) -> Game | None:
-        query = (
-            GAME_SELECT
-            + """
-            WHERE g.id = %s
-            GROUP BY g.id
-            """
+        insert_games_statement = (
+            pg_insert(GameModel)
+            .values(game_values)
+            .on_conflict_do_nothing(index_elements=[GameModel.id])
         )
-        async with self.db.pool.connection() as conn:
-            async with conn.cursor(row_factory=dict_row) as cur:
-                await cur.execute(query, (game_id,))
-                row = await cur.fetchone()
-             
 
-        return None if row is None else self._row_to_game(row)
-    async def get_game_by_slug(
-    self,
-    slug: str,
-) -> Game | None:
+        await self.session.execute(insert_games_statement)
 
-        query = (
-    GAME_SELECT
-    + """
-    WHERE g.slug = %s
-    GROUP BY g.id
-    """
-)
+        website_values = [
+            {
+                "game_id": game.id,
+                "website_type": website.website_type,
+                "url": website.url,
+            }
+            for game in games
+            for website in game.websites
+        ]
 
-        async with self.db.pool.connection() as conn:
-            async with conn.cursor(row_factory=dict_row) as cur:
-                await cur.execute(query, (slug,))
-                row = await cur.fetchone()
-
-        return None if row is None else self._row_to_game(row)
-    
-    async def search_games(
-    self,
-    title: str,
-    limit: int = 10,
-) -> list[Game]:
-
-        query = (
-            GAME_SELECT
-            +
-            """
-            WHERE similarity(name, %s) > 0.1
-            ORDER BY similarity(name, %s) DESC
-            LIMIT %s
-            """)
-
-        async with self.db.pool.connection() as conn:
-            async with conn.cursor(row_factory=dict_row) as cur:
-                await cur.execute(
-                    query,
-                    (f"%{title}%",f"%{title}%", limit),
+        if website_values:
+            insert_websites_statement = (
+                pg_insert(GameWebsiteModel)
+                .values(website_values)
+                .on_conflict_do_nothing(
+                    index_elements=[
+                        GameWebsiteModel.game_id,
+                        GameWebsiteModel.website_type,
+                        GameWebsiteModel.url,
+                    ]
                 )
-
-                rows = await cur.fetchall()
-
-        return [
-            self._row_to_game(row)
-            for row in rows
-        ]
-    
-    async def get_most_popular_games(
-    self,
-    limit: int = 20,
-) -> list[Game]:
-
-        query = """
-            SELECT *
-            FROM games
-            WHERE total_rating_count > 200
-            ORDER BY total_rating DESC NULLS LAST
-            LIMIT %s
-        """
-
-        async with self.db.pool.connection() as conn:
-            async with conn.cursor(row_factory=dict_row) as cur:
-                await cur.execute(query, (limit,))
-                rows = await cur.fetchall()
-
-        return [
-            self._row_to_popular_game(row)
-            for row in rows
-        ]
-    
-    def _row_to_game(self, row: dict) -> Game:
-        return Game(
-            id=row["id"],
-            name=row["name"],
-            slug=row["slug"],
-            summary=row["summary"],
-            rating=row["rating"],
-            rating_count=row["rating_count"],
-            total_rating=row["total_rating"],
-            total_rating_count=row["total_rating_count"],
-            cover_url=row["cover_url"],
-            genres=row["genres"] or [],
-            companies=row["companies"] or [],
-            platforms=row["platforms"] or [],
-            video_id=row["video_id"] or None,
-            websites=[
-            GameWebsite(
-                game_id=row["id"],
-                website_type=w["website_type"],
-                url=w["url"],
             )
-            for w in (row["websites"] or [])
-        ],
+
+            await self.session.execute(insert_websites_statement)
+
+    async def get_by_id(
+        self,
+        game_id: int,
+    ) -> GameModel | None:
+        statement = (
+            select(GameModel)
+            .options(selectinload(GameModel.websites))
+            .where(GameModel.id == game_id)
         )
-    def _row_to_popular_game(self, row: dict) -> Game:
-        return Game(
-            id=row["id"],
-            name=row["name"],
-            slug=row["slug"],
-            summary=row["summary"],
-            rating=row["rating"],
-            rating_count=row["rating_count"],
-            total_rating=row["total_rating"],
-            total_rating_count=row["total_rating_count"],
-            cover_url=row["cover_url"],
-            genres=row["genres"] or [],
-            companies=row["companies"] or [],
-            platforms=row["platforms"] or [],
-            video_id=row["video_id"] or None,
+
+        result = await self.session.execute(statement)
+        return result.scalar_one_or_none()
+
+    async def get_games_by_filter(
+        self,
+        filter_type: GameCategory,
+        value: str,
+        offset: int = 0,
+        limit: int = 10,
+    ) -> list[GameModel]:
+        columns = {
+            "genres": GameModel.genres,
+            "companies": GameModel.companies,
+            "platforms": GameModel.platforms,
+        }
+
+        column = columns[filter_type]
+
+        query = (
+            select(GameModel)
+            .options(selectinload(GameModel.websites))
+            .where(column.contains([value]))
+            .order_by(
+                GameModel.total_rating_count.desc().nulls_last(),
+                GameModel.total_rating.desc().nulls_last(),
+                GameModel.id,
+            )
+            .offset(offset)
+            .limit(limit)
         )
+
+        result = await self.session.execute(query)
+        return list(result.scalars().all())
+
+    async def get_by_slug(
+        self,
+        slug: str,
+    ) -> GameModel | None:
+        statement = (
+            select(GameModel)
+            .options(selectinload(GameModel.websites))
+            .where(GameModel.slug == slug)
+        )
+
+        result = await self.session.execute(statement)
+        return result.scalar_one_or_none()
+
+    async def search(
+        self,
+        title: str,
+        limit: int = 10,
+        threshold: float = 0.1,
+    ) -> list[GameModel]:
+
+        await self.session.execute(
+            select(
+                func.set_config(
+                    "pg_trgm.similarity_threshold",
+                    str(threshold),
+                    True,
+                )
+            )
+        )
+
+        similarity_score = func.similarity(
+            GameModel.name,
+            title,
+        )
+
+        statement = (
+            select(GameModel)
+            .options(selectinload(GameModel.websites))
+            .where(GameModel.name.op("%")(title))
+            .order_by(similarity_score.desc())
+            .limit(limit)
+        )
+
+        result = await self.session.execute(statement)
+        return list(result.scalars().all())
+
+    async def get_most_popular(
+        self,
+        limit: int = 20,
+        minimum_rating_count: int = 200,
+    ) -> list[GameModel]:
+        statement = (
+            select(GameModel)
+            .options(selectinload(GameModel.websites))
+            .where(GameModel.total_rating_count > minimum_rating_count)
+            .order_by(GameModel.total_rating.desc().nulls_last())
+            .limit(limit)
+        )
+
+        result = await self.session.execute(statement)
+        return list(result.scalars().all())

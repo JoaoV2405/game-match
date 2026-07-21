@@ -8,7 +8,7 @@ import pandas as pd
 
 from app.service.model_service import ModelService
 from app.database.database import Database
-from app.repositories.game_repository import PostgresRepository
+from app.service.game_service import GameService
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -18,28 +18,22 @@ model_path = BASE_DIR / "modelo" / "game_embeddings.pkl"
 df_path = BASE_DIR / "modelo" / "games_clean_url.csv"
 
 POSTGRES_URL = os.getenv("DATABASE_URL")
-db = Database(POSTGRES_URL)
 
-repository = PostgresRepository(db)
+database = Database(POSTGRES_URL)
+game_service = GameService(database.session_factory)
 
-
-def get_repository() -> PostgresRepository:
-    return repository
 
 def get_dataframe() -> pd.DataFrame:
     return pd.read_csv(df_path)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    
-    await db.connect()
+    await database.setup_database()
 
     yield
 
-    await db.close()
-
-
-
-app = FastAPI(lifespan=lifespan)
+    await database.close()
 
 
 def get_model():
@@ -48,10 +42,14 @@ def get_model():
 
     return model
 
+
+def get_service() -> GameService:
+    return game_service
+
+
 def get_model_service() -> ModelService:
     model = get_model()
-    repo = get_repository()
     df = get_dataframe()
-    model_service = ModelService(df=df, model=model, repository=repo)
+    model_service = ModelService(df=df, model=model, game_service=game_service)
 
     return model_service

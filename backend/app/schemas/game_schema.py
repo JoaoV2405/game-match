@@ -1,47 +1,34 @@
-
-from dataclasses import dataclass, field
-from typing import Optional
+from pydantic import BaseModel, ConfigDict, Field
 
 
-@dataclass
-class GameRequestDTO:
-    id: str
-    name: str
-    slug: str
+class GameWebsite(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
 
-
-@dataclass(slots=True)
-class GameWebsite:
     game_id: int
     website_type: int
-    url:str
+    url: str
 
-@dataclass(slots=True)
-class Game:
+
+class Game(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
-
     name: str
-
     slug: str
+    summary: str | None = None
+    rating: float | None = None
+    rating_count: int | None = None
+    total_rating: float | None = None
+    total_rating_count: int | None = None
+    cover_url: str | None = None
+    genres: list[str] = Field(default_factory=list)
+    companies: list[str] = Field(default_factory=list)
+    platforms: list[str] = Field(default_factory=list)
+    websites: list[GameWebsite] = Field(default_factory=list)
+    video_id: str | None = None
 
-    summary: Optional[str] = None
 
-    rating: Optional[float] = None
 
-    rating_count: Optional[int] = None
-
-    total_rating: Optional[float] = None
-
-    total_rating_count: Optional[int] = None
-
-    cover_url: Optional[str] = None
-
-    video_id:Optional[str] = None
-
-    websites:Optional[list[GameWebsite]] = field(default_factory=list)
-
-    genres: list[str] = field(default_factory=list)
-
-    companies: list[str] = field(default_factory=list)
-
-    platforms: list[str] = field(default_factory=list)
+class GameCategoryGroup(BaseModel):
+    category: str
+    games: list[Game] = Field(default_factory=list)

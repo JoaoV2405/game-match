@@ -1,11 +1,6 @@
-
-import asyncio
-import sys
-
 from fastapi import FastAPI
-
-from .dependencies import  lifespan
-from .games import  router
+from .dependencies import lifespan
+from .games import router
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -24,4 +19,3 @@ app.add_middleware(
 )
 
 app.include_router(router)
-
