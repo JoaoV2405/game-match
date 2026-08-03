@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.models import GameModel, GameWebsiteModel
-from app.repositories.game_filters import GameCategory
+from app.repositories.game_filters import FilterType, GameCategory, get_filter_conditions, get_order_by
 from app.schemas.game_schema import Game as GameSchema
 
 
@@ -166,7 +166,7 @@ class GameRepository:
     async def get_most_popular(
         self,
         limit: int = 20,
-        minimum_rating_count: int = 200,
+        minimum_rating_count: int = 2000,
     ) -> list[GameModel]:
         statement = (
             select(GameModel)
@@ -178,3 +178,75 @@ class GameRepository:
 
         result = await self.session.execute(statement)
         return list(result.scalars().all())
+    async def get_filter_values(
+        self,
+        filter_type: FilterType 
+    ) -> list[str]:
+        columns = {
+            "genres": GameModel.genres,
+            "companies": GameModel.companies,
+            "platforms": GameModel.platforms,
+        }
+
+        column = columns[filter_type]
+
+        value = func.unnest(column).label("value")
+
+        query = (
+            select(value)
+            .where(column.is_not(None))
+            .distinct()
+            .order_by(value)
+        )
+
+        result = await self.session.execute(query)
+
+        return list(result.scalars().all())
+    
+    async def list_games(
+        self,
+        query: str | None = None,
+        genres: list[str] | None = None,
+        companies: list[str] | None = None,
+        platforms: list[str] | None = None,
+        sort: str = "popular",
+        offset: int = 0,
+        limit: int = 20,
+    ) -> tuple[list[GameModel], int]:
+        conditions = get_filter_conditions(query=query, genres=genres, companies=companies, platforms=platforms)
+
+        order_by = get_order_by(sort=sort)
+        games_query = (
+            select(GameModel)
+            .options(
+                selectinload(GameModel.websites)
+            )
+            .where(*conditions)
+            .order_by(
+                *order_by,
+                GameModel.id,
+            )
+            .offset(offset)
+            .limit(limit)
+        )
+
+        count_query = (
+            select(func.count(GameModel.id))
+            .where(*conditions)
+        )
+
+        games_result = await self.session.execute(
+            games_query
+        )
+
+        count_result = await self.session.execute(
+            count_query
+        )
+
+        games = list(
+            games_result.scalars().all()
+        )
+
+        total = count_result.scalar_one()
+
+        return games, total

@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
 )
 
-from app.repositories.game_filters import GameCategory
+from app.repositories.game_filters import FilterType, GameCategory
 from app.repositories.game_repository import GameRepository
 from app.schemas.game_schema import Game
 
@@ -119,3 +119,89 @@ class GameService:
                 Game.model_validate(model)
                 for model in models
             ]
+    async def get_filter_values(
+        self,
+        filter_type: FilterType,
+    ) -> list[str]:
+        async with self.session_factory() as session:
+            repository = GameRepository(session)
+
+            return await repository.get_filter_values(
+                filter_type
+            )
+    
+    async def list_games(
+        self,
+        query: str | None = None,
+        genres: list[str] | None = None,
+        companies: list[str] | None = None,
+        platforms: list[str] | None = None,
+        sort: str = "popular",
+        page: int = 1,
+        limit: int = 20,
+    ) -> dict:
+        normalized_query = (
+            query.strip()
+            if query and query.strip()
+            else None
+        )
+
+        normalized_genres = self._normalize_values(
+            genres
+        )
+
+        normalized_companies = self._normalize_values(
+            companies
+        )
+
+        normalized_platforms = self._normalize_values(
+            platforms
+        )
+
+        page = max(page, 1)
+        limit = max(1, min(limit, 100))
+
+        offset = (page - 1) * limit
+
+        async with self.session_factory() as session:
+            repository = GameRepository(session)
+
+            models, total = await repository.list_games(
+                query=normalized_query,
+                genres=normalized_genres,
+                companies=normalized_companies,
+                platforms=normalized_platforms,
+                sort=sort,
+                offset=offset,
+                limit=limit,
+            )
+
+        return {
+            "items": [
+                Game.model_validate(model)
+                for model in models
+            ],
+            "pagination": {
+                "page": page,
+                "limit": limit,
+                "total": total,
+                "pages": (
+                    (total + limit - 1) // limit
+                ),
+            },
+        }
+
+    @staticmethod
+    def _normalize_values(
+        values: list[str] | None,
+    ) -> list[str] | None:
+        if not values:
+            return None
+
+        normalized = [
+            value.strip()
+            for value in values
+            if value.strip()
+        ]
+
+        return normalized or None
