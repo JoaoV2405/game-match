@@ -1,19 +1,21 @@
 "use client";
-import { getPopularGames } from "@/app/services/games.service";
-import { useEffect, useState } from "react";
-import { Game } from "@/app/types/game";
-import { GameCarouselSection } from "./GameCarouselSection";
 
-export function PopularGamesSection() {
+import { useEffect, useState } from "react";
+import { GameCarouselSection } from "./GameCarouselSection";
+import { getIndieGames } from "@/app/services/games.service";
+import { Game } from "@/app/types/game";
+
+
+export function IndieGamesSection() {
   const [games, setGames] = useState<Game[] | null>(null);
 
   useEffect(() => {
     async function loadGames() {
       try {
-        const data = await getPopularGames();
+        const data = await getIndieGames();
         setGames(data);
       } catch (error) {
-        console.error("Erro ao carregar jogos populares:", error);
+        console.error("Erro ao carregar jogos indies:", error);
         setGames([]);
       }
     }
@@ -23,10 +25,11 @@ export function PopularGamesSection() {
 
   return (
     <GameCarouselSection
-      title="Jogos Bem Avaliados"
+      title="Melhores indies"
       games={games}
-      href="/game?sort=popular"
-      loadingText="Carregando jogos populares..."
+      href="/game?type=genres&value=Indie&sort=rating"
+      loadingText="Carregando jogos indies..."
+      variant="indie"
     />
   );
 }
