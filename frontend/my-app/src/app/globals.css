@@ -1,26 +1,138 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --palette-midnight-violet: #260c1a;
+  --palette-cotton-candy: #fd96a9;
+  --palette-brilliant-rose: #f62dae;
+  --palette-raspberry-plum: #b30089;
+  --palette-indigo: #470063;
+
+  --pallete-midnight-violet-50: #f9ecf3;
+  --pallete-midnight-violet-100: #f3d8e6;
+  --pallete-midnight-violet-200: #e7b1ce;
+  --pallete-midnight-violet-300: #da8bb5;
+  --pallete-midnight-violet-400: #ce649d;
+  --pallete-midnight-violet-500: #c23d84;
+  --pallete-midnight-violet-600: #9b316a;
+  --pallete-midnight-violet-700: #74254f;
+  --pallete-midnight-violet-800: #4e1835;
+  --pallete-midnight-violet-900: #270c1a;
+  --pallete-midnight-violet-950: #1b0912;
+
+  --pallete-cotton-candy-50: #fee6ea;
+  --pallete-cotton-candy-100: #fecdd6;
+  --pallete-cotton-candy-200: #fd9bad;
+  --pallete-cotton-candy-300: #fc6984;
+  --pallete-cotton-candy-400: #fb375b;
+  --pallete-cotton-candy-500: #fa0532;
+  --pallete-cotton-candy-600: #c80428;
+  --pallete-cotton-candy-700: #96031e;
+  --pallete-cotton-candy-800: #640214;
+  --pallete-cotton-candy-900: #32010a;
+  --pallete-cotton-candy-950: #230107;
+
+  --pallete-brilliant-rose-50: #fee7f6;
+  --pallete-brilliant-rose-100: #fdceed;
+  --pallete-brilliant-rose-200: #fb9dda;
+  --pallete-brilliant-rose-300: #f96cc8;
+  --pallete-brilliant-rose-400: #f73bb5;
+  --pallete-brilliant-rose-500: #f50aa3;
+  --pallete-brilliant-rose-600: #c40882;
+  --pallete-brilliant-rose-700: #930662;
+  --pallete-brilliant-rose-800: #620441;
+  --pallete-brilliant-rose-900: #310221;
+  --pallete-brilliant-rose-950: #220117;
+
+  --pallete-raspberry-plum-50: #ffe5f9;
+  --pallete-raspberry-plum-100: #ffccf3;
+  --pallete-raspberry-plum-200: #ff99e7;
+  --pallete-raspberry-plum-300: #ff66db;
+  --pallete-raspberry-plum-400: #ff33cf;
+  --pallete-raspberry-plum-500: #ff00c3;
+  --pallete-raspberry-plum-600: #cc009c;
+  --pallete-raspberry-plum-700: #990075;
+  --pallete-raspberry-plum-800: #66004e;
+  --pallete-raspberry-plum-900: #330027;
+  --pallete-raspberry-plum-950: #24001b;
+
+  --pallete-indigo-50: #f8e5ff;
+  --pallete-indigo-100: #f1ccff;
+  --pallete-indigo-200: #e299ff;
+  --pallete-indigo-300: #d466ff;
+  --pallete-indigo-400: #c533ff;
+  --pallete-indigo-500: #b700ff;
+  --pallete-indigo-600: #9200cc;
+  --pallete-indigo-700: #6e0099;
+  --pallete-indigo-800: #490066;
+  --pallete-indigo-900: #250033;
+  --pallete-indigo-950: #1a0024;
+
+  --palette-midnight-violet-950: #1b0713;
+  --palette-midnight-violet-975: #12040c;
+
+  --background: var(--palette-midnight-violet);
+  --foreground: var(--palette-cotton-candy);
+  --surface: rgba(253, 150, 169, 0.08);
+  --surface-strong: rgba(253, 150, 169, 0.14);
+  --border-subtle: rgba(253, 150, 169, 0.16);
+  --text-primary: var(--palette-cotton-candy);
+  --text-secondary: rgba(253, 150, 169, 0.72);
+  --accent: var(--palette-brilliant-rose);
+  --accent-hover: var(--palette-raspberry-plum);
 }
 
-/* @theme inline {
+@theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-border: var(--border-subtle);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-bg-body: var(--background);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--background);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-} */
+}
+
+@layer utilities {
+  .app-gradient {
+    background:
+      linear-gradient(
+        135deg,
+        var(--palette-midnight-violet-975) 0%,
+        var(--palette-midnight-violet) 58%,
+        var(--palette-indigo) 100%
+      );
+  }
+
+  .home-background {
+    background-color: var(--palette-midnight-violet-975);
+    background-image:
+      linear-gradient(rgba(253, 150, 169, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(253, 150, 169, 0.05) 1px, transparent 1px),
+      linear-gradient(
+        135deg,
+        var(--palette-midnight-violet-975) 0%,
+        var(--palette-midnight-violet) 54%,
+        var(--palette-indigo) 100%
+      );
+    background-position: top center;
+    background-size: 48px 48px, 48px 48px, auto;
+  }
+
+  .app-surface {
+    background: var(--surface);
+    border-color: var(--border-subtle);
+  }
+}
