@@ -10,29 +10,24 @@ type HeroSectionProps = {
   children?: ReactNode;
 };
 
-export function HeroSection({ game, children }: HeroSectionProps ) {
+export function HeroSection({ game }: HeroSectionProps ) {
   return (
-      <section className="w-full bg-[linear-gradient(135deg,#1e1b4b_0%,#2d1b69_50%,#1e1b4b_100%)] pt-4 pb-16 px-4">
-    {children}
+    <div className="relative z-10 mx-auto w-full max-w-7xl px-2 pt-8 sm:px-6">
+      <div className="mb-8 flex items-center gap-3">
+        <span className="h-9 w-1 rounded-full bg-cotton-candy-200" aria-hidden="true" />
+        <h1 className="text-3xl font-extrabold text-white sm:text-4xl">
+          {game.name}
+        </h1>
+      </div>
 
-    <div className="max-w-7xl mx-auto">
-
-      {/* Linha 1 */}
-      <h1 className="text-4xl font-extrabold text-white mb-8">
-        {game.name}
-      </h1>
-
-      {/* Linha 2 */}
-      <div className="grid grid-cols-4 lg:grid-cols-4 gap-6">
-
-        {/* Cover */}
-        <div>
-          <span className="block text-xs font-semibold uppercase tracking-widest text-violet-300 mb-2">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-4">
+        <div className="mx-auto w-full max-w-xs md:mx-0">
+          <span className="block text-xs font-semibold uppercase tracking-widest text-cotton-candy-100 mb-2">
             Cover Art
           </span>
 
           <div
-            className="relative h-90 rounded-xl overflow-hidden shadow-2xl border border-violet-700/30"
+            className="relative overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-black/30"
             style={{ aspectRatio: "3/4" }}
           >
             <Image
@@ -45,22 +40,23 @@ export function HeroSection({ game, children }: HeroSectionProps ) {
         
         </div>
 
-        {/* Trailer */}
-        <div className="col-span-2">
-          <span className="block text-xs font-semibold uppercase tracking-widest text-violet-300 mb-2">
+        <div className="md:col-span-2">
+          <span className="block text-xs font-semibold uppercase tracking-widest text-cotton-candy-100 mb-2">
             Trailer
           </span>
 
-          <YoutubePlayer videoId={game.video_id ?? ""} />
+          <YoutubePlayer
+            videoId={game.video_id ?? ""}
+            className="border border-white/10 shadow-2xl shadow-black/20"
+          />
         
         </div>
-        <div className="mt-7">
+        <div className="md:col-span-3 lg:col-span-1 lg:mt-7">
             <PlatformBox platforms={game.websites} />
         </div>
 
       </div>
 
     </div>
-  </section>
   );
 }

@@ -16,12 +16,11 @@ export function HomeButton({
       bg-transparent
       text-white
       hover:bg-brilliant-rose-700/80
-      absolute left-6 top-6 z-30
     `,
     light: `
       border-cotton-candy-200
       bg-white
-      text-ink-900
+      text-midnight-violet
       shadow-md
       hover:bg-cotton-candy-50
     `,
@@ -31,26 +30,30 @@ export function HomeButton({
       text-white
       shadow-md
       hover:bg-brilliant-rose-500
-      relative
     `,
   };
   return (
     <Link
       href="/"
       className={`
-                    inline-flex items-center gap-2
-                    rounded-xl
-                    border border-cotton-candy-100/30
-                    bg-transparent
-                    px-4 py-2
-                    text-base font-medium
-                    text-white
-                    backdrop-blur-sm
-                    transition-all
-                    hover:bg-brilliant-rose-700/80     
-                    ${variantClasses[variant]}`}
+        inline-flex
+        shrink-0
+        items-center
+        gap-2
+        rounded-xl
+        border
+        px-3
+        py-2
+        text-sm
+        font-medium
+        backdrop-blur-sm
+        transition-all
+        sm:px-4
+        sm:text-base
+        ${variantClasses[variant]}
+      `}
     >
-      <ArrowLeft size={20} />
+      <ArrowLeft className="h-5 w-5 shrink-0" />
       {label}
     </Link>
   );

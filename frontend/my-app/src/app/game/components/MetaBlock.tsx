@@ -10,8 +10,8 @@ export function MetaBlock({
   variant: "genre" | "platform" | "company";
 }) {
   return (
-    <div className="bg-white rounded-2xl border border-violet-100 shadow-sm p-5">
-      <h3 className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-3">
+    <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-5 shadow-lg shadow-black/10 backdrop-blur-sm">
+      <h3 className="text-xs font-semibold uppercase tracking-widest text-cotton-candy-100 mb-3">
         {label}
       </h3>
       <div className="flex flex-wrap gap-2">

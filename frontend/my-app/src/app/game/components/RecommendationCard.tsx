@@ -6,7 +6,7 @@ export function RecommendationCard({ game }: { game: GameDetail }) {
   return (
     <Link
       href={`/game/${game.id}/recommendations`}
-      className="group flex flex-col rounded-xl overflow-hidden border border-violet-200 bg-white shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] shadow-lg shadow-black/10 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-cotton-candy-200/30 hover:bg-white/[0.1] hover:shadow-xl"
     >
       <div className="relative w-full h-30 ">
         <Image
@@ -18,7 +18,7 @@ export function RecommendationCard({ game }: { game: GameDetail }) {
         />
       </div>
       <div className="p-3">
-        <p className="text-sm font-semibold text-[#2D1B69] group-hover:text-violet-600 transition-colors line-clamp-2">
+        <p className="line-clamp-2 text-sm font-semibold text-white transition-colors group-hover:text-cotton-candy-100">
           {game.name}
         </p>
       </div>

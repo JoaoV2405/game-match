@@ -62,8 +62,8 @@ interface PlatformBoxProps {
 
 export function PlatformBox({ platforms }: PlatformBoxProps) {
   return (
-    <div className="rounded-2xl border border-violet-200 bg-white shadow-md p-5 flex flex-col gap-4">
-      <h3 className="text-sm font-semibold uppercase tracking-widest text-violet-400">
+    <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/[0.06] p-5 shadow-lg shadow-black/10 backdrop-blur-sm">
+      <h3 className="text-sm font-semibold uppercase tracking-widest text-cotton-candy-100">
         Disponível em
       </h3>
       <div className="flex flex-col gap-3">

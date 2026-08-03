@@ -1,24 +1,25 @@
 import { MetaBlock } from "@/app/game/components/MetaBlock";
 import { GameDetail } from "@/app/types/game";
-import { PlatformBox } from "./PlatformBox";
-import Link from "next/link"
-import { ReactElement } from "react";
 
 
-export function InfoSection({ game, children}: { game: GameDetail, children?:ReactElement}) {
+export function InfoSection({ game }: { game: GameDetail }) {
   return (
-    <section className="w-full bg-violet-100 px-4 mb-4">
-      <div className="container mx-auto max-w-7xl">
+    <section className="w-full pb-20 pt-10">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="mb-6 flex items-center gap-3">
+          <span className="h-7 w-1 rounded-full bg-cotton-candy-200" aria-hidden="true" />
+          <h2 className="text-2xl font-bold text-white">Sobre o jogo</h2>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
             
           <div className="lg:col-span-4 flex flex-col gap-8">
             
 
-            <div className="bg-white rounded-2xl border border-violet-100 shadow-sm p-6">
-              <h2 className="text-sm font-semibold uppercase tracking-widest text-violet-400 mb-3">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6 shadow-lg shadow-black/10 backdrop-blur-sm">
+              <h2 className="text-sm font-semibold uppercase tracking-widest text-cotton-candy-100 mb-3">
                 Descrição
               </h2>
-              <p className="text-[#1E1B2E] text-base leading-relaxed">
+              <p className="text-base leading-relaxed text-midnight-violet-50/85">
                 {game.summary}
               </p>
             </div>

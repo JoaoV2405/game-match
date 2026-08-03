@@ -1,13 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
-import { useDebounce } from 'use-debounce';
-import Image from "next/image"
+import { useDebounce } from "use-debounce";
+import Image from "next/image";
 import Link from "next/link";
-
-
 
 interface Game {
   id: number;
@@ -18,19 +16,44 @@ interface Game {
 export function SearchBar() {
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebounce(query, 500);
-
   const [results, setResults] = useState<Game[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const searchBarRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  function handleSearch() { 
-    if (!query.trim()) return; 
-    
-    router.push(`http://localhost:3000/search?q=${encodeURIComponent(query)}&limit=10`); 
-  
+
+  function handleSearch() {
+    if (!query.trim()) return;
+
+    router.push(
+      `/search?q=${encodeURIComponent(query)}&limit=10`
+    );
+
+    setResults([]);
   }
 
   useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Node;
+
+      if (
+        searchBarRef.current &&
+        !searchBarRef.current.contains(target)
+      ) {
+        setResults([]);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
     const controller = new AbortController();
+
     async function search() {
       if (!debouncedQuery.trim()) {
         setResults([]);
@@ -43,14 +66,25 @@ export function SearchBar() {
         const response = await fetch(
           `http://localhost:8000/games/search?q=${encodeURIComponent(
             debouncedQuery
-          )}&limit=5`,{signal: controller.signal}
+          )}&limit=5`,
+          { signal: controller.signal }
         );
 
-        const data = await response.json();
+        if (!response.ok) {
+          throw new Error("Erro ao buscar jogos");
+        }
 
+        const data: Game[] = await response.json();
         setResults(data);
+      } catch (error) {
+        if (error instanceof Error && error.name !== "AbortError") {
+          console.error(error);
+          setResults([]);
+        }
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     }
 
@@ -60,7 +94,10 @@ export function SearchBar() {
   }, [debouncedQuery]);
 
   return (
-    <div className="relative z-50 w-full max-w-2xl">
+    <div
+      ref={searchBarRef}
+      className="relative z-50 w-full max-w-2xl"
+    >
       <div className="relative">
         <Search
           className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
@@ -81,11 +118,16 @@ export function SearchBar() {
             outline-none
             transition
             focus:ring-4
-            focus:ring-violet-300
+            focus:ring-cotton-candy-300
           "
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") { handleSearch(); setQuery(""); } }}
+          onChange={(event) => setQuery(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              handleSearch();
+              setQuery("");
+            }
+          }}
         />
       </div>
 
@@ -96,39 +138,41 @@ export function SearchBar() {
             z-[100]
             mt-2
             w-full
+            overflow-hidden
             rounded-2xl
+            border
             bg-white
             shadow-xl
-            border
           "
         >
           {results.map((game) => (
-        <Link
-          key={game.id}
-          href={`/game/${game.id}/recommendations`}
-          className="
-            flex
-            items-center
-            gap-3
-            p-3
-            transition-colors
-            hover:bg-slate-50
-          "
-        >
-          <div className="relative h-16 w-12 flex-shrink-0 overflow-hidden rounded-md">
-            <Image
-              src={`https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover_url}`}
-              alt={game.name}
-              fill
-              className="object-cover"
-            />
-          </div>
+            <Link
+              key={game.id}
+              href={`/game/${game.id}/recommendations`}
+              onClick={() => setResults([])}
+              className="
+                flex
+                items-center
+                gap-3
+                p-3
+                transition-colors
+                hover:bg-slate-50
+              "
+            >
+              <div className="relative h-16 w-12 flex-shrink-0 overflow-hidden rounded-md">
+                <Image
+                  src={`https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover_url}`}
+                  alt={game.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
 
-          <span className="font-medium text-slate-800">
-            {game.name}
-          </span>
-        </Link>
-      ))}
+              <span className="font-medium text-slate-800">
+                {game.name}
+              </span>
+            </Link>
+          ))}
         </div>
       )}
     </div>

@@ -4,9 +4,9 @@ interface TagPillProps {
 }
 
 const variantStyles: Record<string, string> = {
-  genre: "bg-violet-100 text-violet-700 border border-violet-200",
-  platform: "bg-indigo-50 text-indigo-700 border border-indigo-200",
-  company: "bg-blue-50 text-blue-700 border border-blue-200",
+  company: "bg-cotton-candy-400/15 text-cotton-candy-400 border border-cotton-candy-200/20",
+  platform: "bg-midnight-violet-200/15 text-midnight-violet-200 border border-midnight-violet-200/20",
+  genre: "bg-brilliant-rose-300/15 text-brilliant-rose-300 border border-brilliant-rose-300/20",
 };
 
 export function TagPill({ label, variant = "genre" }: TagPillProps) {
