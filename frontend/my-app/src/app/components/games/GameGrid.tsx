@@ -1,14 +1,14 @@
 import { Game, GameDetail } from "@/app/types/game";
-import { GameCard } from "./GameCard";
+import { GameCard, GameCardVariant } from "./GameCard";
 import Link from "next/link";
-import { MetaBlock } from "@/app/game/components/MetaBlock";
 import { TagPill } from "@/app/game/components/TagPill";
 
 interface Props {
   games: GameDetail[] | Game[];
+  cardVariant?: GameCardVariant;
 }
 
-export function GameGrid({ games }: Props) {
+export function GameGrid({ games, cardVariant = "light" }: Props) {
   return (
     <div
       className="
@@ -18,28 +18,26 @@ export function GameGrid({ games }: Props) {
         md:grid-cols-2
         lg:grid-cols-3
         h-full
+
         
       "
     >
       {games.map((game) => (
-        <div key={game.id} className="">
-
+        <div key={game.id}>
           <Link
             key={game.id}
             href={`/game/${game.id}/recommendations`}
+          >
+            <GameCard
+              game={game}
+              variant={cardVariant}
             >
-          <GameCard
-            key={game.id}
-            game={game}
-            >
-          {game.genres.map((game) => (
-            <TagPill key={game} label={game} variant={"genre"} />
-          ))}
-          </GameCard>
-
+              {game.genres.map((genre) => (
+                <TagPill key={genre} label={genre} variant="genre" />
+              ))}
+            </GameCard>
           </Link>
         </div>
-        
       ))}
     </div>
   );

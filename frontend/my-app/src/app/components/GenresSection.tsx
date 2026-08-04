@@ -5,31 +5,31 @@ const featuredGenres: GenreCardData[] = [
     name: "Aventura",
     description: "Explore mundos e histórias inesquecíveis.",
     href: "/game?type=genres&value=Adventure",
-    gradient: "from-cotton-candy-400 to-cotton-candy-500",
+    gradient: "from-[#fa0532] via-[#fa0532] to-[#fa0532]",
   },
   {
     name: "RPG",
     description: "Evolua personagens e construa sua jornada.",
     href: "/game?type=genres&value=Role-playing%20(RPG)",
-    gradient: "from-brilliant-rose-500 to-indigo-500",
+    gradient: "from-[#00B4D8] via-[#0077B6] to-[#023E8A]",
   },
   {
     name: "Shooter",
     description: "Ação rápida, precisão e muita adrenalina.",
     href: "/game?type=genres&value=Shooter",
-    gradient: "from-cotton-candy-500 to-cotton-candy-500/45",
+    gradient: "from-[#22C55E] via-[#22C55E] to-[#22C55E]",
   },
   {
     name: "Estratégia",
     description: "Planeje cada movimento e conquiste objetivos.",
     href: "/game?type=genres&value=Strategy",
-    gradient: "from-brilliant-rose-500 to-brilliant-rose-500",
+    gradient: "from-[#F2CB40] via-[#F2CB40] to-[#F2CB40]",
   },
   {
     name: "Indie",
     description: "Descubra experiências criativas e originais.",
     href: "/game?type=genres&value=Indie",
-    gradient: "from-brilliant-rose-700 to-indigo-300",
+    gradient: "from-[#F61067] via-[#F61067] to-[#F61067]",
   },
 ];
 

@@ -25,11 +25,9 @@ export function GenreCard({ genre }: GenreCardProps) {
         bg-gradient-to-br
         p-6
         text-white
-        shadow-lg
         transition
         duration-300
         hover:-translate-y-1
-        hover:shadow-2xl
         ${genre.gradient}
       `}
     >

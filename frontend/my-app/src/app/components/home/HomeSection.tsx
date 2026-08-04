@@ -56,9 +56,9 @@ export function HomeSection() {
                 className="
                   ml-3
                   bg-gradient-to-r
-                  from-cotton-candy-100
-                  via-brilliant-rose-100
-                  to-indigo-100
+                  from-cotton-candy-200
+                  via-cotton-candy-200
+                  to-cotton-candy-200
                   bg-clip-text
                   text-transparent
                 "
@@ -78,7 +78,7 @@ export function HomeSection() {
                 rounded-full
                 bg-gradient-to-r
                 from-transparent
-                via-cotton-candy-400
+                via-cotton-candy-300
                 to-transparent
                 blur-[1px]
               "
