@@ -30,11 +30,16 @@ async def get_game_by_id(
 async def search_games(
     q: str = Query(..., min_length=1),
     limit: int = Query(10, ge=1, le=50),
+    page: int = Query(
+            1,
+            ge=1,
+        ),
     service: GameService = Depends(get_service),
 ):
     return await service.search_games(
         title=q,
         limit=limit,
+        page=page
     )
 
 

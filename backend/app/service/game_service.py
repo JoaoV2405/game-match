@@ -80,27 +80,44 @@ class GameService:
     async def search_games(
         self,
         title: str,
-        limit: int = 10,
-    ) -> list[Game]:
+        page: int = 1,
+        limit: int = 20,
+    ) :
         normalized_title = title.strip()
 
         if not normalized_title:
             return []
 
         safe_limit = max(1, min(limit, 100))
+        page = max(page, 1)
 
+        offset = (page - 1) * safe_limit
         async with self.session_factory() as session:
             repository = GameRepository(session)
 
             models = await repository.search(
                 title=normalized_title,
                 limit=safe_limit,
+                offset=offset,
             )
-
-            return [
-                Game.model_validate(model)
-                for model in models
-            ]
+        return {
+                    "items": [
+                        Game.model_validate(model)
+                        for model in models
+                    ],
+                    "pagination": {
+                        "page": page,
+                        "limit": limit,
+                        "total": len(models),
+                        "pages": (
+                            (len(models) + limit - 1) // limit
+                        )
+                    },
+                }
+            # return [
+            #     Game.model_validate(model)
+            #     for model in models
+            # ]
 
     async def get_most_popular_games(
         self,

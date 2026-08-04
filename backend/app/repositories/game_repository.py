@@ -134,6 +134,7 @@ class GameRepository:
         self,
         title: str,
         limit: int = 10,
+        offset: int = 0,
         threshold: float = 0.1,
     ) -> list[GameModel]:
 
@@ -157,6 +158,7 @@ class GameRepository:
             .options(selectinload(GameModel.websites))
             .where(GameModel.name.op("%")(title))
             .order_by(similarity_score.desc())
+            .offset(offset)
             .limit(limit)
         )
 
