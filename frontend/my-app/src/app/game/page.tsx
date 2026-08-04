@@ -1,11 +1,11 @@
 import { HomeButton } from "@/app/components/ui/HomeButton";
-import { getCatalogGames } from "@/app/services/games.service";
+import { getCatalogGames } from "@/app/services/games/catalog.service";
+import type { CatalogSearchParams } from "@/app/types/catalog";
 import { CatalogFilters } from "./components/CatalogFilters";
 import { CatalogResults } from "./components/CatalogResults";
 import {
   catalogPageSize,
   parseCatalogParams,
-  type CatalogSearchParams,
 } from "./catalog";
 
 export default async function GamesPage({

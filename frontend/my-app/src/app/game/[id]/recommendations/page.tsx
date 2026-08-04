@@ -2,7 +2,10 @@
 import { HeroSection } from "../../components/HeroSection";
 import { InfoSection } from "../../components/InfoSection";
 import { RecommendationsSection } from "../../components/RecommendationSection";
-import { getGameDetail, getGameRecommendations } from "../../../services/games.service";
+import {
+  getGameDetail,
+  getGameRecommendations,
+} from "@/app/services/games/detail.service";
 import { HomeButton } from "@/app/components/ui/HomeButton";
 import { HeroLayout } from "@/app/components/layout/HeroLayout";
 

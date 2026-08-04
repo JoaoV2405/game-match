@@ -1,52 +1,42 @@
-import { searchGames, searchGamesClient } from "@/app/services/games.service";
-import { GameGrid } from "../components/games/GameGrid";
-import { ArrowLeft, Star, Calendar, Building, Search} from 'lucide-react';
-import Link from "next/link";
-import { HeroSection } from "../game/components/HeroSection";
-import { HomeButton } from "../components/HomeButton";
+import { HomeButton } from "@/app/components/ui/HomeButton";
+import { searchGamesClient } from "@/app/services/games/search.service";
+import type { GameSearchParams } from "@/app/types/search";
+import { SearchResults } from "./components/SearchResults";
+import { parseSearchParams } from "./search";
+
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<GameSearchParams>;
 }) {
-  const { q } = await searchParams;
-  const game_recommendations = await searchGamesClient(
-    q ?? "",
-    10
+  const params = await searchParams;
+  const searchState = parseSearchParams(params);
+  const { query, currentPage, pageSize } = searchState;
+
+  const result = await searchGamesClient({
+    query,
+    page: currentPage,
+    limit: pageSize,
+  });
+
+  return (
+    <main className="min-h-screen app-gradient text-white">
+      <div className="flex w-full justify-start px-3 pt-3 sm:px-6 sm:pt-6">
+        <HomeButton variant="dark" />
+      </div>
+
+      <section className="mx-auto w-full max-w-7xl px-6 pb-8 pt-8 md:pt-12">
+        <h1 className="text-4xl font-extrabold tracking-normal md:text-5xl">
+          Busca de Jogos
+        </h1>
+      </section>
+
+      <SearchResults
+        games={result.items}
+        query={query}
+        pageSize={pageSize}
+        pagination={result.pagination}
+      />
+    </main>
   );
-    
-  return(
-        <div className="results-view animate-in bg-violet-100">
-            <div className="bg-[linear-gradient(135deg,#1e1b4b_0%,#2d1b69_50%,#1e1b4b_100%)] pt-2">
-            <HomeButton></HomeButton>
-            </div>
-                    
-            <section className="py-8 px-4 bg-bg-body min-h-[50vh]">
-                <div className="container mx-auto max-w-7xl">
-                    {game_recommendations.length === 0 ? (
-                        <div className="text-center py-20 bg-white border border-dashed border-border rounded-xl">
-                            <h3 className="text-xl font-bold mb-2">No Recommendations Found</h3>
-                            <p className="text-text-secondary mb-6">Try a different Game or method.</p>
-                            <button className="bg-accent hover:bg-accent-hover text-white px-6 py-2.5 rounded-lg font-medium transition-all inline-flex items-center gap-2">
-                                <Search size={18} /> Search Another Game
-                            </button>
-                        </div>
-                    ) : (
-                        
-                        <div className="grid grid-cols-1 gap-5  bg-white
-    rounded-3xl
-    p-8
-    shadow-xl
-    border border-violet-100">
-                            <div className="text-3xl font-extrabold text-text-primary mb-5 flex text-violet-700/60">Resultados encontrados para {q}</div>
-                    
-
-                          <GameGrid games={game_recommendations} />
-                        </div>
-                        )}
-                </div>
-            </section>
-        </div>
-    );
 }
-

@@ -1,5 +1,5 @@
 "use client";
-import { getPopularGames } from "@/app/services/games.service";
+import { getPopularGames } from "@/app/services/games/featured.service";
 import { useEffect, useState } from "react";
 import { Game } from "@/app/types/game";
 import { GameCarouselSection } from "./GameCarouselSection";

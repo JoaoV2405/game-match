@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { GameCarouselSection } from "./GameCarouselSection";
-import { getIndieGames } from "@/app/services/games.service";
+import { getIndieGames } from "@/app/services/games/featured.service";
 import { Game } from "@/app/types/game";
 
 

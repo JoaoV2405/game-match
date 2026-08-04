@@ -1,7 +1,7 @@
 import type {
   GameCatalogFilterType,
   GameCatalogSort,
-} from "@/app/services/games.service";
+} from "@/app/types/catalog";
 import {
   filterTypeOptions,
   genreOptions,

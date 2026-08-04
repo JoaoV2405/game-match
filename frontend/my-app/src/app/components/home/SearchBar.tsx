@@ -13,11 +13,12 @@ interface Game {
   cover_url: string;
 }
 
+type SearchSuggestionResponse = Game[] | { items: Game[] };
+
 export function SearchBar() {
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebounce(query, 500);
   const [results, setResults] = useState<Game[]>([]);
-  const [loading, setLoading] = useState(false);
 
   const searchBarRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -26,7 +27,7 @@ export function SearchBar() {
     if (!query.trim()) return;
 
     router.push(
-      `/search?q=${encodeURIComponent(query)}&limit=10`
+      `/search?q=${encodeURIComponent(query)}&limit=18`
     );
 
     setResults([]);
@@ -61,8 +62,6 @@ export function SearchBar() {
       }
 
       try {
-        setLoading(true);
-
         const response = await fetch(
           `http://localhost:8000/games/search?q=${encodeURIComponent(
             debouncedQuery
@@ -74,16 +73,12 @@ export function SearchBar() {
           throw new Error("Erro ao buscar jogos");
         }
 
-        const data: Game[] = await response.json();
-        setResults(data);
+        const data: SearchSuggestionResponse = await response.json();
+        setResults(Array.isArray(data) ? data : data.items);
       } catch (error) {
         if (error instanceof Error && error.name !== "AbortError") {
           console.error(error);
           setResults([]);
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
         }
       }
     }

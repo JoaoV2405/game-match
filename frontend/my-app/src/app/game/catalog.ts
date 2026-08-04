@@ -1,8 +1,10 @@
 import type {
+  CatalogSearchParams,
+  CatalogState,
   GameCatalogFilterType,
-  GameCatalogPagination,
   GameCatalogSort,
-} from "@/app/services/games.service";
+} from "@/app/types/catalog";
+import type { Pagination } from "@/app/types/pagination";
 
 export const catalogPageSize = 18;
 
@@ -36,21 +38,6 @@ export const sortOptions: Array<{ label: string; value: GameCatalogSort }> = [
   { label: "Nome Z-A", value: "name_desc" },
 ];
 
-export interface CatalogSearchParams {
-  type?: string;
-  value?: string;
-  genres?: string;
-  sort?: string;
-  page?: string;
-}
-
-export interface CatalogState {
-  filterType: GameCatalogFilterType;
-  selectedGenre: string;
-  selectedSort: GameCatalogSort;
-  currentPage: number;
-}
-
 export function parseCatalogParams(params: CatalogSearchParams): CatalogState {
   return {
     filterType: "genres",
@@ -64,11 +51,7 @@ export function getGenreLabel(value: string) {
   return genreOptions.find((genre) => genre.value === value)?.label ?? value;
 }
 
-export function getTotalLabel(total: number) {
-  return total === 1 ? "1 jogo encontrado" : `${total} jogos encontrados`;
-}
-
-export function getPaginationLabel(pagination: GameCatalogPagination) {
+export function getPaginationLabel(pagination: Pagination) {
   return `${pagination.page} / ${Math.max(pagination.pages, 1)}`;
 }
 
