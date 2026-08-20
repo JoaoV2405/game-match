@@ -1,4 +1,3 @@
-
 import { HeroSection } from "../../components/HeroSection";
 import { InfoSection } from "../../components/InfoSection";
 import { RecommendationsSection } from "../../components/RecommendationSection";

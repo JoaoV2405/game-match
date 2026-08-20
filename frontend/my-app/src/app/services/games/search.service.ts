@@ -49,7 +49,8 @@ export async function searchGamesClient({
   });
 
   const response = await fetch(`${API_URL}/games?${params.toString()}`, {
-    next: { revalidate: 3600 },
+     next: { revalidate: 3600 } ,
+
   });
 
   if (!response.ok) {

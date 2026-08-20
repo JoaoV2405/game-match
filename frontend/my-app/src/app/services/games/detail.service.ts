@@ -3,7 +3,7 @@ import type { GameDetail } from "@/app/types/game";
 
 export async function getGameDetail(id: string): Promise<GameDetail> {
   const response = await fetch(`${API_URL}/games/id/${id}`, {
-    next: { revalidate: 3600 },
+    cache: "no-store"
   });
 
   if (!response.ok) {
@@ -17,7 +17,7 @@ export async function getGameRecommendations(
   id: number,
 ): Promise<GameDetail[]> {
   const response = await fetch(`${API_URL}/games/recommend/${id}`, {
-    next: { revalidate: 3600 },
+    cache: "no-store"
   });
 
   if (!response.ok) {
