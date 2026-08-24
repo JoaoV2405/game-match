@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import { useDebounce } from "use-debounce";
 import Image from "next/image";
 import Link from "next/link";
+import { API_URL } from "@/app/services/api";
 
 interface Game {
   id: number;
@@ -63,7 +64,7 @@ export function SearchBar() {
 
       try {
         const response = await fetch(
-          `http://localhost:8000/games/search?q=${encodeURIComponent(
+          `${API_URL}/games/search?q=${encodeURIComponent(
             debouncedQuery
           )}&limit=5`,
           { signal: controller.signal }

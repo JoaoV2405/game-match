@@ -41,7 +41,11 @@ O projeto é composto por:
 
 ## Busca de jogos
 
-O usuário pode pesquisar jogos por nome através da interface principal.
+O usuário pode pesquisar jogos por nome através da interface principal, com sugestões enquanto digita e uma página de resultados paginada.
+
+## Catálogo e filtros
+
+O catálogo permite explorar os jogos em páginas, filtrar por gênero e ordenar os resultados por popularidade ou avaliação. A página inicial também destaca jogos populares e títulos indie.
 
 ## Página de detalhes
 
@@ -62,6 +66,10 @@ A partir de um jogo selecionado, o sistema identifica os títulos mais semelhant
 ## Navegação entre recomendações
 
 O usuário pode explorar continuamente novos jogos através da rede de recomendações geradas pelo sistema.
+
+## Execução em containers
+
+O projeto possui configuração Docker Compose para executar frontend, backend e PostgreSQL. A comunicação entre os containers usa a URL interna do serviço de backend, enquanto as requisições do navegador usam a URL pública configurada para a API.
 
 ---
 
@@ -199,7 +207,7 @@ http://localhost:8000
 Entre na pasta do frontend:
 
 ```bash
-cd frontend
+cd frontend/my-app
 ```
 
 Instale as dependências:
@@ -225,6 +233,18 @@ A aplicação ficará disponível em:
 ```text
 http://localhost:3000
 ```
+
+---
+
+# Execução com Docker Compose
+
+Na raiz do projeto, execute:
+
+```bash
+docker compose up --build
+```
+
+A aplicação estará disponível em `http://localhost:3000` e a API em `http://localhost:8000`.
 
 ---
 
@@ -261,7 +281,6 @@ project/
 
 # Trabalhos Futuros
 
-* Filtros avançados por gênero e plataforma.
 * Recomendações híbridas utilizando metadados e embeddings.
 * Sistema de favoritos.
 * Histórico de navegação.
