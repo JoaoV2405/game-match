@@ -1,6 +1,9 @@
 
 import { GameDetail } from "@/app/types/game";
 import {RecommendationCard} from "./RecommendationCard";
+import Link from "next/link";
+import { LinkLoadingIndicator } from "@/app/components/ui/LinkLoadingIndicator";
+
 
 export function RecommendationsSection({ games, currentTitle }: { games: GameDetail[]; currentTitle: string }) {
   if (games.length === 0) return null;
@@ -15,8 +18,14 @@ export function RecommendationsSection({ games, currentTitle }: { games: GameDet
         </div>
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {games.map((g) => (
-            <RecommendationCard key={g.id} game={g} />
+          {games.map((game) => (
+            <Link
+            key={game.id}
+            className="block h-full"
+            href={`/game/${game.id}/recommendations`}>
+            <RecommendationCard key={game.id} game={game} />
+            <LinkLoadingIndicator></LinkLoadingIndicator>
+          </Link>
           ))}
         </div>
       </div>

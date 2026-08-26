@@ -94,6 +94,7 @@ export function GameCarouselSection({
           </div>
         ) : (
           <GameCarousel games={games} />
+          
         )}
       </div>
     </section>

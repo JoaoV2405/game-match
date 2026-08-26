@@ -3,8 +3,11 @@ import type { Game } from "@/app/types/game";
 
 export async function getIndieGames(): Promise<Game[]> {
   const response = await fetch(
-    `${PUBLIC_API_URL}/games/filter?type=genres&value=Indie&limit=10&offset=0`,
-    { cache: "no-store" },
+    `${PUBLIC_API_URL}/games/filter?type=genres&value=Indie&limit=10&offset=0`,{
+      next: {
+      revalidate: 300,
+    }
+    }
   );
 
   if (!response.ok) {
@@ -16,7 +19,9 @@ export async function getIndieGames(): Promise<Game[]> {
 
 export async function getPopularGames(): Promise<Game[]> {
   const response = await fetch(`${PUBLIC_API_URL}/games/popular`, {
-    cache: "no-store",
+     next: {
+      revalidate: 300,
+    },
   });
 
   if (!response.ok) {

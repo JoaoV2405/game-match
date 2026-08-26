@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Game } from "@/app/types/game";
 import { GameCard } from "./GameCard";
 import { TagPill } from "@/app/game/components/TagPill";
+import { LinkLoadingIndicator } from "../ui/LinkLoadingIndicator";
 
 interface GameCarouselProps {
   games: Game[];
@@ -110,6 +111,7 @@ export function GameCarousel({ games }: GameCarouselProps) {
                   />
                 ))}
               </GameCard>
+              <LinkLoadingIndicator />
             </Link>
           </div>
         ))}

@@ -2,6 +2,7 @@ import { Game, GameDetail } from "@/app/types/game";
 import { GameCard, GameCardVariant } from "./GameCard";
 import Link from "next/link";
 import { TagPill } from "@/app/game/components/TagPill";
+import { LinkLoadingIndicator } from "../ui/LinkLoadingIndicator";
 
 interface Props {
   games: GameDetail[] | Game[];
@@ -36,6 +37,8 @@ export function GameGrid({ games, cardVariant = "light" }: Props) {
                 <TagPill key={genre} label={genre} variant="genre" />
               ))}
             </GameCard>
+            <LinkLoadingIndicator />
+            
           </Link>
         </div>
       ))}
