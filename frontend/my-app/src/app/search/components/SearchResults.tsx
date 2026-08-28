@@ -18,7 +18,7 @@ export function SearchResults({
   pagination,
 }: SearchResultsProps) {
   const title = query ? `Resultados para ${query}` : "Busca de jogos";
-
+  
   return (
     <ResultsSection
       title={title}

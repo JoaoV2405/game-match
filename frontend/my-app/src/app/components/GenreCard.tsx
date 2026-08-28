@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { LinkLoadingIndicator } from "./ui/LinkLoadingIndicator";
 
 export interface GenreCardData {
   name: string;
@@ -14,8 +15,7 @@ interface GenreCardProps {
 
 export function GenreCard({ genre }: GenreCardProps) {
   return (
-    <Link
-      href={genre.href}
+    <div
       className={`
         group
         relative
@@ -86,6 +86,6 @@ export function GenreCard({ genre }: GenreCardProps) {
           )}
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

@@ -9,6 +9,7 @@ export default async function SearchPage({
 }: {
   searchParams: Promise<GameSearchParams>;
 }) {
+  
   const params = await searchParams;
   const searchState = parseSearchParams(params);
   const { query, currentPage, pageSize } = searchState;

@@ -1,4 +1,6 @@
 import { GenreCard, GenreCardData } from "./GenreCard";
+import { LinkLoadingIndicator } from "./ui/LinkLoadingIndicator";
+import Link from "next/link";
 
 const featuredGenres: GenreCardData[] = [
   {
@@ -57,10 +59,16 @@ export function GenresSection() {
           "
         >
           {featuredGenres.map((genre) => (
+            <Link
+              key={genre.name}
+              href={genre.href}
+            >
             <GenreCard
               key={genre.name}
               genre={genre}
             />
+            <LinkLoadingIndicator name="o gênero"/>
+            </Link>
           ))}
         </div>
       </div>

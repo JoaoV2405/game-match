@@ -24,7 +24,7 @@ export function RecommendationsSection({ games, currentTitle }: { games: GameDet
             className="block h-full"
             href={`/game/${game.id}/recommendations`}>
             <RecommendationCard key={game.id} game={game} />
-            <LinkLoadingIndicator></LinkLoadingIndicator>
+            <LinkLoadingIndicator name="o jogo"/>
           </Link>
           ))}
         </div>

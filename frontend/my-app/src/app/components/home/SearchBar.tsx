@@ -1,12 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { Search } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { LoaderCircle, Search } from "lucide-react";
 import { useDebounce } from "use-debounce";
 import Image from "next/image";
 import Link from "next/link";
 import { API_URL } from "@/app/services/api";
+import { LinkLoadingIndicator } from "../ui/LinkLoadingIndicator";
+import { LoadingOverlay } from "../ui/LoadingOverlay";
 
 interface Game {
   id: number;
@@ -17,22 +19,31 @@ interface Game {
 type SearchSuggestionResponse = Game[] | { items: Game[] };
 
 export function SearchBar() {
+  const pathname = usePathname();
+
+  return <SearchBarContent key={pathname} />;
+}
+
+export function SearchBarContent() {
   const [query, setQuery] = useState("");
+  const [isPending, startTransition] = useTransition();
   const [debouncedQuery] = useDebounce(query, 500);
   const [results, setResults] = useState<Game[]>([]);
-
   const searchBarRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   function handleSearch() {
-    if (!query.trim()) return;
+  if (!query.trim()) return;
 
+  const searchQuery = query.trim();
+
+  startTransition(() => {
     router.push(
-      `/search?q=${encodeURIComponent(query)}&limit=18`
+      `/search?q=${encodeURIComponent(searchQuery)}&limit=18`
     );
+  });
+}
 
-    setResults([]);
-  }
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -52,6 +63,7 @@ export function SearchBar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
 
   useEffect(() => {
     const controller = new AbortController();
@@ -126,7 +138,7 @@ export function SearchBar() {
           }}
         />
       </div>
-
+      {isPending && <LoadingOverlay name="os resultados" />}
       {results.length > 0 && (
         <div
           className="
@@ -145,7 +157,6 @@ export function SearchBar() {
             <Link
               key={game.id}
               href={`/game/${game.id}/recommendations`}
-              onClick={() => setResults([])}
               className="
                 flex
                 items-center
@@ -167,6 +178,7 @@ export function SearchBar() {
               <span className="font-medium text-slate-800">
                 {game.name}
               </span>
+              <LinkLoadingIndicator name="o jogo"/>
             </Link>
           ))}
         </div>

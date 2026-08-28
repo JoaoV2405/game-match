@@ -37,7 +37,7 @@ export function GameGrid({ games, cardVariant = "light" }: Props) {
                 <TagPill key={genre} label={genre} variant="genre" />
               ))}
             </GameCard>
-            <LinkLoadingIndicator />
+            <LinkLoadingIndicator name="o jogo" />
             
           </Link>
         </div>
