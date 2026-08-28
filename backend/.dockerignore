@@ -1,0 +1,33 @@
+# Secrets and local configuration
+.env
+.env.*
+*.pem
+*.key
+
+# Virtual environments and Python caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Local-only data and tooling output
+csvs/
+responses/
+htmlcov/
+.coverage
+*.log
+.DS_Store
+Thumbs.db
+
+# Source-control metadata
+.git/
+.gitignore
+
+# Notebook checkpoints are not needed by the API image
+modelo/.ipynb_checkpoints/
+
+#db operation scripts are no needed by the api image
+scripts/

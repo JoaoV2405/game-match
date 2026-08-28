@@ -20,7 +20,6 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: DockerFile
     develop:
       watch:
         - action: sync
@@ -28,11 +27,8 @@ services:
           target: /app/app
     restart: unless-stopped
 
-    depends_on:
-      - db
-
     environment:
-      DATABASE_URL: postgresql+psycopg://postgres:postgres@db:5432/games
+      DATABASE_URL: postgresql+psycopg://
 
     ports:
       - "8000:8000"
