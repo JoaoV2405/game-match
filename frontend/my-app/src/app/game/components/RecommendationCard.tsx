@@ -8,7 +8,7 @@ export function RecommendationCard({ game }: { game: GameDetail }) {
     >
       <div className="relative aspect-[3/4] w-full">
         <Image
-          src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover_url}`}
+          src={`https://images.igdb.com/igdb/image/upload/t_720p/${game.cover_url}`}
           alt={game.name}
           fill
           className="object-cover"
