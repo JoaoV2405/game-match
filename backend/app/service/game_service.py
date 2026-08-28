@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import (
 
 from app.repositories.game_filters import FilterType, GameCategory
 from app.repositories.game_repository import GameRepository
-from app.schemas.game_schema import Game
+from app.schemas.game_schema import Game, GameRecommendation
 
 
 class GameService:
@@ -76,6 +76,31 @@ class GameService:
                 return None
 
             return Game.model_validate(model)
+
+    async def replace_recommendations(
+        self,
+        recommendations: Sequence[GameRecommendation],
+    ) -> None:
+        async with self.session_factory() as session:
+            async with session.begin():
+                repository = GameRepository(session)
+                await repository.replace_recommendations(recommendations)
+
+    async def get_recommendations(
+        self,
+        game_id: int,
+        limit: int = 10,
+    ) -> list[Game]:
+        safe_limit = max(1, min(limit, 100))
+
+        async with self.session_factory() as session:
+            repository = GameRepository(session)
+            models = await repository.get_recommendations(
+                game_id=game_id,
+                limit=safe_limit,
+            )
+
+            return [Game.model_validate(model) for model in models]
 
     async def search_games(
         self,

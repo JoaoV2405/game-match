@@ -6,10 +6,6 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from app.database.base import Base
-
-from app.models.models import GameModel, GameWebsiteModel  # noqa: F401
-
 
 class Database:
     def __init__(self, postgres_url: str):
@@ -28,13 +24,7 @@ class Database:
             autoflush=False,
         )
 
-    async def setup_database(self) -> None:
-        async with self.engine.begin() as connection:
-            await connection.execute(
-                text("CREATE EXTENSION IF NOT EXISTS pg_trgm")
-            )
 
-            await connection.run_sync(Base.metadata.create_all)
 
     async def close(self) -> None:
         await self.engine.dispose()

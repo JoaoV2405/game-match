@@ -5,6 +5,7 @@ import pickle
 
 from fastapi import FastAPI
 import pandas as pd
+from dotenv import load_dotenv
 
 from app.service.model_service import ModelService
 from app.database.database import Database
@@ -12,6 +13,11 @@ from app.service.game_service import GameService
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+for env_filename in (".env", ".env.local"):
+    dotenv_path = BASE_DIR / env_filename
+    if dotenv_path.is_file():
+        load_dotenv(dotenv_path=dotenv_path)
 
 model_path = BASE_DIR / "modelo" / "game_embeddings.pkl"
 
@@ -29,10 +35,7 @@ def get_dataframe() -> pd.DataFrame:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await database.setup_database()
-
     yield
-
     await database.close()
 
 

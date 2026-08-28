@@ -3,9 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from app.api.game_enums import GameSort
 from app.repositories.game_filters import GameCategory
 from app.service.game_service import GameService
-from app.service.model_service import ModelService
 
-from .dependencies import get_model_service, get_service
+from .dependencies import get_service
 
 
 router = APIRouter(prefix="/games", tags=["games"])
@@ -54,11 +53,10 @@ async def get_popular_games(
 @router.get("/recommend/{game_id}")
 async def recommend(
     game_id: int,
-    service: ModelService = Depends(get_model_service),
+    limit: int = Query(10, ge=1, le=100),
+    service: GameService = Depends(get_service),
 ):
-    games = await service.recommend(game_id)
-
-    return games
+    return await service.get_recommendations(game_id, limit)
 
 
 @router.get("/filter")

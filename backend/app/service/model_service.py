@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
-from app.schemas.game_schema import Game
+from app.schemas.game_schema import GameRecommendation
 from app.service.game_service import GameService
 
 
@@ -16,11 +16,11 @@ class ModelService:
         self.df = df
         self.game_service = game_service
 
-    def get_recommendation_ids(
+    def calculate_recommendations(
         self,
         game_id: int,
         limit: int = 10,
-    ) -> list[int]:
+    ) -> list[GameRecommendation]:
         matching_indexes = self.df.index[
             self.df["id"] == game_id
         ].tolist()
@@ -43,35 +43,29 @@ class ModelService:
             for index in ordered_indexes
             if int(self.df.iloc[index]["id"]) != game_id
         ][:limit]
-
-        return (
-            self.df
-            .iloc[recommendation_indexes]["id"]
-            .astype(int)
-            .tolist()
-        )
-
-    async def recommend(
-        self,
-        game_id: int,
-        limit: int = 10,
-    ) -> list[Game]:
-        recommendation_ids = self.get_recommendation_ids(
-            game_id=game_id,
-            limit=limit,
-        )
-
-        if not recommendation_ids:
-            return []
-
-        games: list[Game] = []
-
-        for recommended_game_id in recommendation_ids:
-            game = await self.game_service.get_game_by_id(
-                recommended_game_id
+        print(f"Recommendations for game_id {game_id}")
+        return [
+            GameRecommendation(
+                game_id=game_id,
+                recommended_game_id=int(self.df.iloc[index]["id"]),
+                score=float(similarity_scores[index]),
+                rank=rank,
             )
+            for rank, index in enumerate(recommendation_indexes, start=1)
+        ]
 
-            if game is not None:
-                games.append(game)
-
-        return games
+    async def refresh_recommendations(
+        self,
+        limit: int = 10,
+    ) -> int:
+        recommendations = [
+            recommendation
+            for game_id in self.df["id"].astype(int)
+            for recommendation in self.calculate_recommendations(
+                game_id=game_id,
+                limit=limit,
+            )
+        ]
+        print(f"Total recommendations generated: {len(recommendations)}")
+        await self.game_service.replace_recommendations(recommendations)
+        return len(recommendations)

@@ -81,6 +81,14 @@ class GameModel(Base):
         lazy="selectin",
     )
 
+    recommendations: Mapped[list[GameRecommendationModel]] = relationship(
+        back_populates="game",
+        foreign_keys="GameRecommendationModel.game_id",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        lazy="selectin",
+    )
+
 
 class GameWebsiteModel(Base):
     __tablename__ = "game_websites"
@@ -121,4 +129,34 @@ class GameWebsiteModel(Base):
 
     game: Mapped[GameModel] = relationship(
         back_populates="websites",
+    )
+
+
+class GameRecommendationModel(Base):
+    __tablename__ = "game_recommendations"
+
+    __table_args__ = (
+        UniqueConstraint(
+            "game_id",
+            "rank",
+            name="uq_game_recommendation_rank",
+        ),
+    )
+
+    game_id: Mapped[int] = mapped_column(
+        ForeignKey("games.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+
+    recommended_game_id: Mapped[int] = mapped_column(
+        ForeignKey("games.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+
+    score: Mapped[float] = mapped_column(Float, nullable=False)
+    rank: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    game: Mapped[GameModel] = relationship(
+        back_populates="recommendations",
+        foreign_keys=[game_id],
     )

@@ -28,6 +28,14 @@ class Game(BaseModel):
     video_id: str | None = None
 
 
+class GameRecommendation(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    game_id: int
+    recommended_game_id: int
+    score: float
+    rank: int
+
 
 class GameCategoryGroup(BaseModel):
     category: str

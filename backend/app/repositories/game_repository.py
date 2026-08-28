@@ -1,13 +1,18 @@
 from collections.abc import Sequence
 
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models.models import GameModel, GameWebsiteModel
+from app.models.models import (
+    GameModel,
+    GameRecommendationModel,
+    GameWebsiteModel,
+)
 from app.repositories.game_filters import FilterType, GameCategory, get_filter_conditions, get_order_by
 from app.schemas.game_schema import Game as GameSchema
+from app.schemas.game_schema import GameRecommendation as GameRecommendationSchema
 
 
 class GameRepository:
@@ -85,6 +90,49 @@ class GameRepository:
 
         result = await self.session.execute(statement)
         return result.scalar_one_or_none()
+
+    async def replace_recommendations(
+        self,
+        recommendations: Sequence[GameRecommendationSchema],
+    ) -> None:
+        await self.session.execute(delete(GameRecommendationModel))
+
+        for start in range(0, len(recommendations), 1_000):
+            batch = recommendations[start : start + 1_000]
+            print(f"Inserting batch of {len(batch)} recommendations...")
+            values = [
+                {
+                    "game_id": recommendation.game_id,
+                    "recommended_game_id": recommendation.recommended_game_id,
+                    "score": recommendation.score,
+                    "rank": recommendation.rank,
+                }
+                for recommendation in batch
+            ]
+
+            await self.session.execute(
+                pg_insert(GameRecommendationModel).values(values)
+            )
+
+    async def get_recommendations(
+        self,
+        game_id: int,
+        limit: int,
+    ) -> list[GameModel]:
+        statement = (
+            select(GameModel)
+            .join(
+                GameRecommendationModel,
+                GameRecommendationModel.recommended_game_id == GameModel.id,
+            )
+            .options(selectinload(GameModel.websites))
+            .where(GameRecommendationModel.game_id == game_id)
+            .order_by(GameRecommendationModel.rank)
+            .limit(limit)
+        )
+
+        result = await self.session.execute(statement)
+        return list(result.scalars().all())
 
     async def get_games_by_filter(
         self,
