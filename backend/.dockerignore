@@ -27,6 +27,7 @@ Thumbs.db
 .gitignore
 
 # Notebook checkpoints are not needed by the API image
+modelo/
 modelo/.ipynb_checkpoints/
 
 #db operation scripts are no needed by the api image

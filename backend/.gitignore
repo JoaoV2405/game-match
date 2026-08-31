@@ -2,5 +2,7 @@
 csvs
 responses
 __pycache__
+**/.mypy_cache/
 .env
 .env.local
+.pdm-python
