@@ -31,7 +31,7 @@ export function HeroSection({ game }: HeroSectionProps ) {
             style={{ aspectRatio: "3/4" }}
           >
             <Image
-              src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover_url}`}
+              src={`https://images.igdb.com/igdb/image/upload/t_720p/${game.cover_url}`}
               alt={`${game.name} cover`}
               fill
               className="object-cover object-top "

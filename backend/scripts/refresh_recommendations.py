@@ -1,5 +1,3 @@
-"""Recalculate and persist game recommendations from the current model."""
-
 import asyncio
 import os
 from pathlib import Path
@@ -9,9 +7,10 @@ import selectors
 import pandas as pd
 from dotenv import load_dotenv
 
-from app.database.database import Database
-from app.service.game_service import GameService
-from app.service.model_service import ModelService
+from app.application.services import GameCatalogService, RecommendationService
+from app.core.config import get_settings
+from app.infrastructure.database import Database
+from app.infrastructure.persistence import SqlAlchemyGameRepositoryProvider
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -22,19 +21,18 @@ for env_filename in (".env", ".env.local"):
 
 
 async def main() -> None:
-    database_url = os.getenv("DATABASE_URL")
-    if not database_url:
-        raise RuntimeError("DATABASE_URL is required.")
+    settings = get_settings()
 
-    with (PROJECT_ROOT / "modelo" / "game_embeddings.pkl").open("rb") as file:
+    with settings.embeddings_path.open("rb") as file:
         model = pickle.load(file)
 
-    dataframe = pd.read_csv(PROJECT_ROOT / "modelo" / "games_clean_url.csv")
-    database = Database(database_url)
-    service = ModelService(
+    dataframe = pd.read_csv(settings.games_dataset_path)
+    database = Database(settings.database_url)
+    catalog = GameCatalogService(SqlAlchemyGameRepositoryProvider(database.session_factory))
+    service = RecommendationService(
         model=model,
-        df=dataframe,
-        game_service=GameService(database.session_factory),
+        dataframe=dataframe,
+        catalog=catalog,
     )
 
     try:

@@ -5,8 +5,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, pool
 from sqlalchemy.engine import Connection
-from app.database.base import Base
-from app.models.models import GameModel, GameWebsiteModel  # noqa: F401
+from app.infrastructure.database.base import Base
+from app.infrastructure.database.models import GameModel, GameWebsiteModel  # noqa: F401
 from alembic import context
 
 # this is the Alembic Config object, which provides
