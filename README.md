@@ -1,294 +1,283 @@
 # 🎮 Game Matcher
 
+Aplicação web para descobrir jogos e receber recomendações por similaridade. O sistema combina metadados de jogos armazenados no PostgreSQL com embeddings pré-computados para encontrar títulos semelhantes.
 
+## Visão geral
 
-Game Matcher é uma aplicação web para descoberta de jogos baseada em similaridade. A partir de um jogo selecionado pelo usuário, o sistema utiliza embeddings pré-computados e métricas de similaridade para recomendar títulos com características semelhantes.
+O projeto é composto por três partes:
 
-O projeto é composto por:
+- **Frontend:** interface responsiva construída com Next.js, React, TypeScript e Tailwind CSS.
+- **API:** backend FastAPI responsável pela busca, catálogo, detalhes e recomendações.
+- **Dados e recomendação:** PostgreSQL para os metadados e relações de recomendação; Pandas, NumPy e scikit-learn para o processamento dos embeddings.
 
-* **Frontend** desenvolvido em Next.js e React.
-* **Backend** desenvolvido em FastAPI.
-* **Banco de dados PostgreSQL** para armazenamento dos metadados dos jogos.
-* **Modelo de recomendação** baseado em embeddings vetoriais e similaridade cosseno.
+## Telas do sistema
 
----
-## Capturas de Tela
+Atualmente, o sistema possui **4 telas principais**.
 
-### Página Inicial
+| Tela | Rota | Descrição |
+| --- | --- | --- |
+| Início | `/` | Apresentação, busca rápida, destaques de jogos bem avaliados, jogos indies e navegação por gêneros. |
+| Catálogo | `/game` | Exploração paginada de jogos com filtro por gênero e ordenação. |
+| Busca | `/search` | Resultados paginados a partir de uma consulta por nome. |
+| Detalhes e recomendações | `/game/[id]/recommendations` | Informações completas do jogo e sugestões de títulos semelhantes. |
 
-![Página Inicial](./docs/homepage.png)
+### Início
 
----
-### Página de Detalhes
+![Tela inicial](./docs/homepage.png)
 
-![Detalhes](./docs/game_detail.png)
+### Catálogo de jogos
 
----
-### Pesquisa
+![Catálogo de jogos](./docs/catalogue.png)
 
-![Página Inicial](./docs/image.png)
+### Busca
 
----
+![Resultados da busca](./docs/search_results.png)
 
+### Detalhes e recomendações
 
-### Página de Resultados
+![Detalhes do jogo e recomendações](./docs/game_detail.png)
 
-![Recomendações](./docs/search_results.png)
+## Funcionalidades
 
----
+- Busca de jogos por nome, com resultados paginados.
+- Catálogo paginado com **18 jogos por página**.
+- Filtro de catálogo por gênero.
+- Ordenação por popularidade, melhor avaliação, quantidade de avaliações e nome (A–Z ou Z–A).
+- Destaques de jogos bem avaliados e de títulos indies na página inicial.
+- Navegação por gêneros em destaque: aventura, RPG, shooter, estratégia e indie.
+- Página de detalhes com capa, trailer, descrição, gêneros, plataformas, estúdios e links externos.
+- Recomendações persistidas para cada jogo, ordenadas por similaridade.
+- Navegação contínua entre jogos recomendados.
 
-# Funcionalidades
+## Como funcionam as recomendações
 
-## Busca de jogos
+1. O conjunto de embeddings pré-computados é carregado de `backend/modelo/game_embeddings.pkl`.
+2. Para cada jogo, o backend calcula a similaridade de cosseno em relação aos demais títulos.
+3. O próprio jogo é removido do resultado e os 10 títulos mais similares são selecionados.
+4. As recomendações, incluindo pontuação e posição no ranking, são gravadas em `game_recommendations`.
+5. A API consulta essas recomendações persistidas ao abrir a tela de detalhes, evitando o recálculo a cada requisição.
 
-O usuário pode pesquisar jogos por nome através da interface principal, com sugestões enquanto digita e uma página de resultados paginada.
+Quando os dados ou embeddings forem atualizados, regenere as relações:
 
-## Catálogo e filtros
-
-O catálogo permite explorar os jogos em páginas, filtrar por gênero e ordenar os resultados por popularidade ou avaliação. A página inicial também destaca jogos populares e títulos indie.
-
-## Página de detalhes
-
-Cada jogo possui uma página dedicada contendo:
-
-* Capa
-* Trailer
-* Descrição
-* Gêneros
-* Plataformas
-* Estúdios
-* Links externos
-
-## Recomendações
-
-A partir de um jogo selecionado, o sistema identifica os títulos mais semelhantes utilizando embeddings vetoriais e apresenta recomendações personalizadas.
-
-## Navegação entre recomendações
-
-O usuário pode explorar continuamente novos jogos através da rede de recomendações geradas pelo sistema.
-
-## Execução em containers
-
-O projeto possui configuração Docker Compose para executar frontend, backend e PostgreSQL. A comunicação entre os containers usa a URL interna do serviço de backend, enquanto as requisições do navegador usam a URL pública configurada para a API.
-
----
-
-# Arquitetura
-
-```text
-Frontend (Next.js)
-        │
-        ▼
-Backend (FastAPI)
-        │
-        ├── Modelo de Recomendação
-        │
-        └── PostgreSQL
+```bash
+cd backend
+python scripts/refresh_recommendations.py
 ```
 
----
+> O banco já deve conter os jogos antes de executar esse comando.
 
-# Tecnologias Utilizadas
+## Arquitetura
 
-## Frontend
+```text
+Navegador
+    │
+    ▼
+Frontend — Next.js / React
+    │  requisições HTTP
+    ▼
+API — FastAPI
+    ├── catálogo, busca, filtros e detalhes
+    ├── recomendações persistidas
+    └── serviço de embeddings (Pandas + scikit-learn)
+                 │
+                 ▼
+          PostgreSQL
+          ├── games
+          ├── game_websites
+          └── game_recommendations
+```
 
-* Next.js
-* React
-* TypeScript
-* TailwindCSS
+## API
 
-## Backend
+Com a API em execução, a documentação interativa fica disponível em `http://localhost:8000/docs`.
 
-* FastAPI
-* Pandas
-* NumPy
-* Scikit-Learn
-* Psycopg
+| Método | Endpoint | Finalidade |
+| --- | --- | --- |
+| `GET` | `/health` | Verifica se a API está disponível. |
+| `GET` | `/games` | Lista o catálogo; aceita `q`, `genres`, `companies`, `platforms`, `sort`, `page` e `limit`. |
+| `GET` | `/games/id/{game_id}` | Retorna os dados completos de um jogo. |
+| `GET` | `/games/search` | Busca por similaridade textual; aceita `q`, `page` e `limit`. |
+| `GET` | `/games/popular` | Retorna os jogos em destaque. |
+| `GET` | `/games/recommend/{game_id}` | Retorna recomendações persistidas para um jogo. |
+| `GET` | `/games/filter` | Filtra jogos por `genres`, `companies` ou `platforms`. |
+| `GET` | `/games/filters/{filter_type}` | Lista os valores disponíveis para um tipo de filtro. |
 
-## Banco de Dados
+Valores aceitos para `sort`: `popular`, `rating`, `rating_count`, `name_asc` e `name_desc`.
 
-* PostgreSQL
+## Banco de dados
 
----
+O schema é versionado por Alembic. A fonte de verdade são as migrações em [`backend/migrations/versions`](./backend/migrations/versions). O DDL abaixo é equivalente ao schema atual.
 
-# Instalação
+```sql
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
-## Pré-requisitos
+CREATE TABLE games (
+    id BIGINT PRIMARY KEY,
+    name TEXT NOT NULL,
+    slug TEXT NOT NULL UNIQUE,
+    summary TEXT,
+    rating DOUBLE PRECISION,
+    rating_count INTEGER,
+    total_rating DOUBLE PRECISION,
+    total_rating_count INTEGER,
+    cover_url TEXT,
+    genres TEXT[] NOT NULL,
+    companies TEXT[] NOT NULL,
+    platforms TEXT[] NOT NULL,
+    video_id VARCHAR(20)
+);
 
-* Python 3.13+
-* Node.js 20+
-* PostgreSQL 16+
-* Git
+CREATE INDEX ix_games_name ON games (name);
+CREATE INDEX ix_games_slug ON games (slug);
+CREATE INDEX ix_games_name_trgm ON games USING GIN (name gin_trgm_ops);
 
----
+CREATE TABLE game_websites (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    game_id BIGINT NOT NULL REFERENCES games(id) ON DELETE CASCADE,
+    website_type INTEGER NOT NULL,
+    url TEXT NOT NULL,
+    CONSTRAINT uq_game_website UNIQUE (game_id, website_type, url)
+);
 
-# Clonando o Projeto
+CREATE INDEX ix_game_websites_game_id ON game_websites (game_id);
+
+CREATE TABLE game_recommendations (
+    game_id BIGINT NOT NULL REFERENCES games(id) ON DELETE CASCADE,
+    recommended_game_id BIGINT NOT NULL REFERENCES games(id) ON DELETE CASCADE,
+    score DOUBLE PRECISION NOT NULL,
+    rank INTEGER NOT NULL,
+    PRIMARY KEY (game_id, recommended_game_id),
+    CONSTRAINT uq_game_recommendation_rank UNIQUE (game_id, rank)
+);
+```
+
+O índice `pg_trgm` acelera a busca textual aproximada pelo nome dos jogos. As colunas `genres`, `companies` e `platforms` usam arrays do PostgreSQL para permitir filtros por categoria.
+
+## Tecnologias
+
+| Camada | Tecnologias |
+| --- | --- |
+| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS |
+| Backend | Python 3.13, FastAPI, SQLAlchemy assíncrono, Psycopg e Alembic |
+| Recomendação | Pandas, NumPy e scikit-learn |
+| Banco | PostgreSQL 15+ |
+| Infraestrutura | Docker e Docker Compose |
+
+## Execução local
+
+### Pré-requisitos
+
+- Python 3.13 ou superior
+- Node.js 20 ou superior
+- PostgreSQL 15 ou superior
+- Git
+
+### 1. Clone o repositório
 
 ```bash
 git clone https://github.com/JoaoV2405/game-match.git
-
-cd game-matcher
+cd game-match
 ```
 
----
-
-# Configuração do Banco de Dados
-
-Crie um banco PostgreSQL:
+### 2. Crie e configure o banco
 
 ```sql
 CREATE DATABASE games;
 ```
 
-Crie um arquivo `.env` no backend:
+Crie `backend/.env.local` com a URL de conexão:
 
 ```env
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/games
+DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/games
 ```
 
----
-
-# Configuração do Backend
-
-Entre na pasta do backend:
+### 3. Configure o backend
 
 ```bash
 cd backend
-```
-
-Crie um ambiente virtual:
-
-```bash
 python -m venv .venv
 ```
 
 Ative o ambiente virtual:
 
-### Windows
-
 ```bash
-.venv\Scripts\activate
-```
+# Windows (PowerShell)
+.venv\Scripts\Activate.ps1
 
-### Linux/Mac
-
-```bash
+# Linux/macOS
 source .venv/bin/activate
 ```
 
-Instale as dependências:
+Instale as dependências e aplique as migrações:
 
 ```bash
 pip install -r requirements.txt
+alembic upgrade head
 ```
 
-Execute a aplicação:
-
-```bash
-fastapi dev app/api/recommender_api.py
-```
-
-ou
+Inicie a API:
 
 ```bash
 uvicorn app.api.recommender_api:app --reload
 ```
 
-O backend ficará disponível em:
+A API estará disponível em `http://localhost:8000`.
 
-```text
-http://localhost:8000
-```
+### 4. Configure o frontend
 
----
-
-# Configuração do Frontend
-
-Entre na pasta do frontend:
+Em outro terminal:
 
 ```bash
 cd frontend/my-app
-```
-
-Instale as dependências:
-
-```bash
 npm install
 ```
 
-Crie o arquivo `.env.local`:
+Crie `frontend/my-app/.env.local`:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
-Execute:
+Inicie o frontend:
 
 ```bash
 npm run dev
 ```
 
-A aplicação ficará disponível em:
+Abra `http://localhost:3000` no navegador.
 
-```text
-http://localhost:3000
+## Docker Compose
+
+O repositório inclui um `docker-compose.yaml` com os serviços de PostgreSQL, backend e frontend. Antes de subir o ambiente, defina no serviço `backend` uma `DATABASE_URL` que aponte para o banco `db` da rede do Compose, por exemplo:
+
+```env
+DATABASE_URL=postgresql+psycopg://postgres:postgres@db:5432/games
 ```
 
----
-
-# Execução com Docker Compose
-
-Na raiz do projeto, execute:
+Em seguida, execute na raiz do projeto:
 
 ```bash
 docker compose up --build
 ```
 
-A aplicação estará disponível em `http://localhost:3000` e a API em `http://localhost:8000`.
+Após os serviços estarem disponíveis, aplique as migrações e atualize as recomendações dentro do container do backend, caso a base de jogos já tenha sido carregada.
 
----
-
-# Estrutura do Projeto
+## Estrutura do projeto
 
 ```text
-project/
-│
+game-match/
 ├── backend/
-│   ├── app/
-│   ├── modelo/
-│   ├── csvs/
-│   └── requirements.txt
-│
-├── frontend/
-│   ├── src/
-│   └── public/
-│
+│   ├── app/                 # API, serviços, repositórios e modelos
+│   ├── migrations/          # Versionamento do schema com Alembic
+│   ├── modelo/              # Embeddings, CSV e notebook do recomendador
+│   └── scripts/             # Rotinas administrativas
+├── docs/                    # Capturas de tela do sistema
+├── frontend/my-app/
+│   └── src/app/             # Rotas, componentes, serviços e tipos
+├── docker-compose.yaml
 └── README.md
 ```
 
----
+## Licença
 
-# Como Funciona o Sistema de Recomendação
-
-1. O usuário seleciona um jogo.
-2. O sistema localiza o embedding correspondente.
-3. É calculada a similaridade cosseno entre o jogo selecionado e os demais jogos do catálogo.
-4. Os jogos mais similares são ordenados.
-5. Os metadados dos jogos recomendados são recuperados do banco de dados.
-6. As recomendações são exibidas ao usuário.
-
----
-
-# Trabalhos Futuros
-
-* Recomendações híbridas utilizando metadados e embeddings.
-* Sistema de favoritos.
-* Histórico de navegação.
-* Avaliações e feedback dos usuários.
-* Deploy em ambiente cloud.
-
----
-
-# Licença
-
-Este projeto é disponibilizado para fins acadêmicos e educacionais.
+Projeto disponibilizado para fins acadêmicos e educacionais.
