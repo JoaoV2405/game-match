@@ -66,6 +66,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
+            -f ./backend/Dockerfile \
             -t "${{ env.GAR_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" \
             ./backend
 
